@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
+using System.Collections.Generic;
 
 namespace PharmacyMedicineSupply.Controllers
 {
@@ -10,32 +10,80 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicalRepresentativeScheduleController : ControllerBase
     {
-        
+        public List<String> reps = new List<String>() {
+             "Roshan", "Neha", "Rebitha"
+        };
         public List<Doctor> doctors = new Doctors().getDoc();
-        private readonly PharmacySupplyContext _context;
-        public MedicalRepresentativeScheduleController(PharmacySupplyContext context) {
-            _context = context;
+
+        private readonly IMedicineStockReposiroty<MedicineStock> _medicineRepo;
+
+        public MedicalRepresentativeScheduleController(IMedicineStockReposiroty<MedicineStock> medicineRepo) {
+            _medicineRepo = medicineRepo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RepresentativeSchedule>>> GetRepSchedule(DateTime date)
+        public async Task<List<RepresentativeSchedule>> GetRepSchedule()
         {
-            List<string> mapped = MapRepsDoctors(date);
-            
-            return await _context.RepresentativeSchedules.ToListAsync(); ;
+            DateTime getCur = DateTime.Today;
+            DateTime cur = DateTime.Today;
+
+            Dictionary<Doctor,string> dict = MapRepsDoctors();
+
+            List<RepresentativeSchedule> representativeSchedules = new();
+
+            Dictionary<string, string> ailment_dict = new();
+
+            foreach (KeyValuePair<Doctor, string> data in dict)
+            {
+                string medicines = "";
+                string treating_ailment = data.Key.TreatingAilment;
+                if (ailment_dict.ContainsKey(treating_ailment))
+                {
+                    medicines = ailment_dict[treating_ailment];
+                }
+                else
+                {
+                    medicines = await _medicineRepo.GetMedicineForSchedule(data.Key.TreatingAilment);
+                    ailment_dict.Add(treating_ailment, medicines);
+                }
+
+                RepresentativeSchedule schedule = new();
+                schedule.DoctorName = data.Key.Name;
+                schedule.DoctorContactNumber = data.Key.ContactNumber;
+                schedule.TreatingAilment = data.Key.TreatingAilment;
+                schedule.RepresentativeName = data.Value;
+                schedule.Slot = DateTime.Now;
+                schedule.Medicine = medicines;
+                schedule.Date = cur;
+
+                representativeSchedules.Add(schedule);
+
+                cur = cur.AddDays(1);
+
+                if (cur.Equals(getCur.AddDays(5)))
+                {
+                    cur = getCur;
+                }
+
+            }
+
+            return representativeSchedules;
         }
 
-        private List<string> MapRepsDoctors(DateTime date)
+        private Dictionary<Doctor,string> MapRepsDoctors()
         {
             int days = 5;
+
             int doctors_count = doctors.Count;
-            List<MedicalRepresentative> reps = _context.MedicalRepresentatives.ToList();
-            //List<MedicineStock> meds = _context.MedicineStocks.ToList();
+
             int reps_count = reps.Count;
+
             int count = 0;
+
             int x, y = 0;
-            List<string> map = new List<string>();
-            Boolean f = false;
+
+            Dictionary<Doctor,string> map = new();
+
             while (doctors_count > 0)
             {
                 count += 1;
@@ -50,36 +98,9 @@ namespace PharmacyMedicineSupply.Controllers
                 {
                     y = days;
                 }
-                RepresentativeSchedule representativeSchedule = new RepresentativeSchedule();
-                representativeSchedule.RepresentativeName = reps[x - 1].Name;
-                representativeSchedule.DoctorName = doctors[count - 1].Name;
-                representativeSchedule.DoctorContactNumber = doctors[count - 1].ContactNumber;
-                if(date.AddDays(y-1).DayOfWeek == DayOfWeek.Sunday)
-                {                    
-                    f = true;
-                }
-                if (f)
-                {
-                    y += 1;
-                    representativeSchedule.Date = date.AddDays(y - 1);
-                }
-                else
-                {
-                    representativeSchedule.Date = date.AddDays(y - 1);
-                }                
-                representativeSchedule.Slot = date.AddHours(12);
-                representativeSchedule.TreatingAilment = doctors[count - 1].TreatingAilment;
-                var xy = _context.MedicineStocks.Where(x => x.TargetAilment == doctors[count - 1].TreatingAilment);
-                foreach(var m in xy)
-                {                  
-                    representativeSchedule.Medicine += m.Name + ",";
-                }
-                representativeSchedule.Medicine = representativeSchedule.Medicine.Remove(representativeSchedule.Medicine.Length - 1, 1);
-                representativeSchedule.Medicine += ".";
-                _context.RepresentativeSchedules.Add(representativeSchedule);
-                _context.SaveChanges();
-                map.Add(reps[x - 1] + "," + doctors[count - 1].Name + "On Day " + y);
+                map.Add(doctors[count - 1],reps[x - 1]);
             }
+
             return map;
         }
     }

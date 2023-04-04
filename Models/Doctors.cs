@@ -8,31 +8,31 @@
           {
               Name = "Aran",
               ContactNumber = "9542289337",
-              TreatingAilment = "Orthopaedics"
+              TreatingAilment = "General"
           },
           new Doctor()
           {
               Name = "Avinash",
               ContactNumber = "8532280017",
-              TreatingAilment = "Gynaecology"
+              TreatingAilment = "Cardio"
           },
           new Doctor()
           {
               Name = "Adarsh",
               ContactNumber = "9232289112",
-              TreatingAilment = "General"
+              TreatingAilment = "Ortho"
           },
           new Doctor()
           {
               Name = "Pavith",
               ContactNumber = "7569172719",
-              TreatingAilment = "Gynaecology"
+              TreatingAilment = "General"
           },
           new Doctor()
           {
               Name = "Parthe",
               ContactNumber = "7169100701",
-              TreatingAilment = "Orthopaedics"
+              TreatingAilment = "Ortho"
           }
         };
 
