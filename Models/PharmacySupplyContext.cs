@@ -28,7 +28,7 @@ namespace PharmacySupplyProject.Models
 
             modelBuilder.Entity<RepresentativeSchedule>().HasKey(x => new { x.RepresentativeName, x.DoctorName, x.Date });
 
-            modelBuilder.Entity<PharmacyMedSupply>().HasKey(x => new { x.PharmacyName, x.MedicineName });
+            modelBuilder.Entity<PharmacyMedSupply>().HasKey(x => new { x.PharmacyName, x.MedicineName, x.DateTime });
 
             modelBuilder.Entity<Manager>(entity =>
             {

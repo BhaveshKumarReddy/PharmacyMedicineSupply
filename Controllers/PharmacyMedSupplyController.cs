@@ -35,21 +35,30 @@ namespace PharmacyMedicineSupply.Controllers
                 if (demand >= InStock)
                 {
                     supply = InStock / PharmacyRecords;
+                    MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
+                    ms.NumberOfTabletsInStock = 0;
+                    _medicineStockRepo.UpdateMedicineStock(ms);
                 }
                 else
                 {
-                    supply = demand/ PharmacyRecords;   
+                    supply = demand/ PharmacyRecords;
+                    MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
+                    ms.NumberOfTabletsInStock-= demand;
+                    _medicineStockRepo.UpdateMedicineStock(ms);
                 }
+
                 foreach (Pharmacy p in ListOfPharmacies)
                 {
                     PharmacyMedSupply pm = new PharmacyMedSupply();
                     pm.PharmacyName = p.Name;
                     pm.MedicineName = x.Name;
                     pm.SupplyCount = supply;
+                    pm.DateTime= DateTime.Now;
                     _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
                 }
 
             }
+            
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
 
         }
