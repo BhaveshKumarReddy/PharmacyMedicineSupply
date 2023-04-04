@@ -2,39 +2,37 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicineStocksController : ControllerBase
     {
         private readonly PharmacySupplyContext _context;
+        private readonly IMapper _mapper;
 
-        public MedicineStocksController(PharmacySupplyContext context)
+        public MedicineStocksController(PharmacySupplyContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-
-        // GET: api/MedicineStocks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicineStock>>> GetMedicineStocks()
+        public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
         {
-          if (_context.MedicineStocks == null)
-          {
-              return NotFound();
-          }
-            return await _context.MedicineStocks.ToListAsync();
-        }
-
-        
-        private bool MedicineStockExists(string id)
-        {
-            return (_context.MedicineStocks?.Any(e => e.Name == id)).GetValueOrDefault();
+            if (_context.MedicineStocks == null)
+            {
+                return NotFound();
+            }
+            return await _context.MedicineStocks.Select(x => _mapper.Map<MedicineStockDTO>(x)).ToListAsync();
         }
     }
 }
