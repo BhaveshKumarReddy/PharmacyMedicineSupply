@@ -25,7 +25,7 @@ namespace PharmacySupplyProject.Models
                 entity.HasIndex(u => u.ChemicalComposition).IsUnique();
             });
 
-            modelBuilder.Entity<RepresentativeSchedule>().HasKey(x => new { x.RepresentativeName, x.DoctorName });
+            modelBuilder.Entity<RepresentativeSchedule>().HasKey(x => new { x.RepresentativeName, x.DoctorName, x.Date });
 
             modelBuilder.Entity<PharmacyMedicineSupply>().HasKey(x => new { x.PharmacyName, x.MedicineName });
 
