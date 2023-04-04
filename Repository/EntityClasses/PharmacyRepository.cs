@@ -11,9 +11,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         {
             _db = db;
         }
-        public async Task<IEnumerable<Pharmacy>> GetAllPharmacies()
+        public List<Pharmacy> GetAllPharmacies()
         {
-            return await _db.Pharmacies.ToListAsync();
+            return  _db.Pharmacies.ToList();
         }
+        
+
     }
 }

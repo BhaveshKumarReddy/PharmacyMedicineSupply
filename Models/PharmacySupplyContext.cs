@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PharmacySupplyProject.Models;
 
@@ -27,7 +28,7 @@ namespace PharmacySupplyProject.Models
 
             modelBuilder.Entity<RepresentativeSchedule>().HasKey(x => new { x.RepresentativeName, x.DoctorName, x.Date });
 
-            modelBuilder.Entity<PharmacyMedicineSupply>().HasKey(x => new { x.PharmacyName, x.MedicineName });
+            modelBuilder.Entity<PharmacyMedSupply>().HasKey(x => new { x.PharmacyName, x.MedicineName });
 
             modelBuilder.Entity<Manager>(entity =>
             {
@@ -39,7 +40,7 @@ namespace PharmacySupplyProject.Models
         public virtual DbSet<MedicalRepresentative> MedicalRepresentatives { get; set;}
         public virtual DbSet<RepresentativeSchedule> RepresentativeSchedules { get; set; }
         public virtual DbSet<Manager> Managers { get; set; }
-        public virtual DbSet<PharmacyMedicineSupply> PharmacyMedicineSupplies { get; set; }
+        public virtual DbSet<PharmacyMedSupply> PharmacyMedicineSupplies { get; set; }
         public virtual DbSet<Pharmacy> Pharmacies { get; set; }
         public virtual DbSet<MedicineDemand> MedicineDemands { get; set; }
 

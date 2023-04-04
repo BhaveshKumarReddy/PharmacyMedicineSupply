@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PharmacySupplyProject.Models
 {
-    public class PharmacyMedicineSupply
+    public class PharmacyMedSupply
     {
         public string PharmacyName { get; set; } = string.Empty;
         public string MedicineName { get; set; } = string.Empty;

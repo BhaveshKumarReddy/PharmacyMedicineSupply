@@ -26,9 +26,9 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             _db.SaveChanges() ;
         }
 
-        public async Task<IEnumerable<MedicineDemand>> GetMedicineDemand()
+        public List<MedicineDemand> GetMedicineDemand()
         {
-            return await _db.MedicineDemands.ToListAsync();
+            return  _db.MedicineDemands.ToList();
             
         }
 
