@@ -8,9 +8,7 @@ namespace PharmacySupplyProject.Models
         public string DoctorName { get; set; } =    string.Empty;
         public string TreatingAilment { get; set; } = string.Empty;
         public string Medicine { get; set; } = string.Empty;
-
-        [DataType(DataType.Time)]
-        public DateTime Slot { get; set; }
+        public string Slot { get; set; } = string.Empty;
 
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }

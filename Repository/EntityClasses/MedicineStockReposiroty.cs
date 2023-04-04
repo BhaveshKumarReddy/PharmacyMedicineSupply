@@ -19,9 +19,9 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             string all_medicines = "";
             foreach(var medicine in medicines)
             {
-                all_medicines += medicine.Name;
+                all_medicines += ", "+medicine.Name;
             }
-            return all_medicines;
+            return (all_medicines.Length>0)? all_medicines.Substring(2): all_medicines;
         }
 
         public MedicineStock GetStockByMedicineName(string medicinename)

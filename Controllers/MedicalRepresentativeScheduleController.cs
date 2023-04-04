@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PharmacyMedicineSupply.Models.DTO.MedicalRepresentative;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 using System.Collections.Generic;
@@ -10,30 +11,32 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicalRepresentativeScheduleController : ControllerBase
     {
-        public List<String> reps = new List<String>() {
-             "Roshan", "Neha", "Rebitha"
-        };
         public List<Doctor> doctors = new Doctors().getDoc();
 
         private readonly IMedicineStockReposiroty<MedicineStock> _medicineRepo;
+        private readonly IMedicalRepresentativeRepository<MedicalRepresentativeDTO> _representativesRepo;
+        private readonly IRepresentativeScheduleRepository<RepresentativeSchedule> _representativeScheduleRepo;
 
-        public MedicalRepresentativeScheduleController(IMedicineStockReposiroty<MedicineStock> medicineRepo) {
+        public MedicalRepresentativeScheduleController(IMedicineStockReposiroty<MedicineStock> medicineRepo, IMedicalRepresentativeRepository<MedicalRepresentativeDTO> representatives, IRepresentativeScheduleRepository<RepresentativeSchedule> representativeScheduleRepo) {
             _medicineRepo = medicineRepo;
+            _representativesRepo = representatives;
+            _representativeScheduleRepo = representativeScheduleRepo;
         }
 
         [HttpGet]
-        public async Task<List<RepresentativeSchedule>> GetRepSchedule()
+        public async Task<List<RepresentativeSchedule>> GetSchedule(DateTime startDate)
         {
-            DateTime getCur = DateTime.Today;
-            DateTime cur = DateTime.Today;
+            DateTime newDate = startDate;
 
-            Dictionary<Doctor,string> dict = MapRepsDoctors();
+            Dictionary<Doctor, string> map_dict = await MapRepsDoctors();
+            Dictionary<string, string> ailment_dict = new();
 
             List<RepresentativeSchedule> representativeSchedules = new();
 
-            Dictionary<string, string> ailment_dict = new();
+            int total_days = 5;
+            int slot_time = 1;
 
-            foreach (KeyValuePair<Doctor, string> data in dict)
+            foreach (KeyValuePair<Doctor, string> data in map_dict)
             {
                 string medicines = "";
                 string treating_ailment = data.Key.TreatingAilment;
@@ -47,31 +50,46 @@ namespace PharmacyMedicineSupply.Controllers
                     ailment_dict.Add(treating_ailment, medicines);
                 }
 
+                if(newDate.DayOfWeek == DayOfWeek.Sunday) {
+                    newDate = newDate.AddDays(1);
+                    total_days += 1;
+                }
+
                 RepresentativeSchedule schedule = new();
                 schedule.DoctorName = data.Key.Name;
                 schedule.DoctorContactNumber = data.Key.ContactNumber;
                 schedule.TreatingAilment = data.Key.TreatingAilment;
                 schedule.RepresentativeName = data.Value;
-                schedule.Slot = DateTime.Now;
+                schedule.Slot = slot_time+"pm - "+(slot_time+1)+"pm";
                 schedule.Medicine = medicines;
-                schedule.Date = cur;
+                schedule.Date = newDate;
 
                 representativeSchedules.Add(schedule);
 
-                cur = cur.AddDays(1);
+                newDate = newDate.AddDays(1);
 
-                if (cur.Equals(getCur.AddDays(5)))
+                if (newDate.Equals(startDate.AddDays(total_days)))
                 {
-                    cur = getCur;
+                    newDate = startDate;
+                    total_days = 5;
+                }
+
+                if (newDate.Equals(startDate))
+                {
+                    slot_time += 1;
                 }
 
             }
 
+            await _representativeScheduleRepo.AddSchedules(representativeSchedules);
+
             return representativeSchedules;
         }
 
-        private Dictionary<Doctor,string> MapRepsDoctors()
+        private async Task<Dictionary<Doctor,string>> MapRepsDoctors()
         {
+            List<MedicalRepresentativeDTO> reps = await _representativesRepo.GetMedicalRepresentatives();
+
             int days = 5;
 
             int doctors_count = doctors.Count;
@@ -98,7 +116,7 @@ namespace PharmacyMedicineSupply.Controllers
                 {
                     y = days;
                 }
-                map.Add(doctors[count - 1],reps[x - 1]);
+                map.Add(doctors[count - 1],reps[x - 1].Name);
             }
 
             return map;

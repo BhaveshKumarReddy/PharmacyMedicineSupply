@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using PharmacyMedicineSupply.Models.DTO.MedicalRepresentative;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.Classes;
 using PharmacyMedicineSupply.Repository.EntityClasses;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddTransient<IRepresentativeScheduleRepository<RepresentativeSchedule>, RepresentativeScheduleRepository>();
+builder.Services.AddTransient<IMedicalRepresentativeRepository<MedicalRepresentativeDTO>, MedicalRepresentativeRepository>();
 builder.Services.AddTransient<IMedicineStockReposiroty<MedicineStock>, MedicineStockReposiroty>();
 builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -37,6 +41,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standard Authorization header using the Bearer scheme (\"Bearer {token} \")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 builder.Services.AddCors(c =>
 {
