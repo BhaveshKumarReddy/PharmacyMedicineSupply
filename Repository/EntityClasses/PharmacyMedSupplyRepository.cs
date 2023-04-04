@@ -14,6 +14,7 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         public void AddPharmacyMedSupply(PharmacyMedSupply pharmacyMedicineSupply)
         {
             _db.PharmacyMedicineSupplies.Add(pharmacyMedicineSupply);
+            _db.SaveChanges();
  
         }
 
