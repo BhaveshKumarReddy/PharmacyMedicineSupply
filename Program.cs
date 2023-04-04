@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.Classes;
+using PharmacyMedicineSupply.Repository.EntityClasses;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 using System.Text;
@@ -11,9 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddTransient<IMedicineStockReposiroty<MedicineStock>, MedicineStockReposiroty>();
 builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
