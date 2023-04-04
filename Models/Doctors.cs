@@ -10,17 +10,18 @@
               ContactNumber = "9542289337",
               TreatingAilment = "General"
           },
+
           new Doctor()
           {
               Name = "Avinash",
               ContactNumber = "8532280017",
-              TreatingAilment = "Cardio"
+              TreatingAilment = "Cardiology"
           },
           new Doctor()
           {
               Name = "Adarsh",
               ContactNumber = "9232289112",
-              TreatingAilment = "Ortho"
+              TreatingAilment = "Orthopedic"
           },
           new Doctor()
           {
@@ -32,7 +33,49 @@
           {
               Name = "Parthe",
               ContactNumber = "7169100701",
-              TreatingAilment = "Ortho"
+              TreatingAilment = "Orthopedic"
+          },
+          new Doctor()
+          {
+              Name = "Prabhakar",
+              ContactNumber = "8187002119",
+              TreatingAilment = "ENT"
+          },
+          new Doctor()
+          {
+              Name = "Aran1",
+              ContactNumber = "9542289337",
+              TreatingAilment = "General"
+          },
+          new Doctor()
+          {
+              Name = "Avinash2",
+              ContactNumber = "8532280017",
+              TreatingAilment = "Cardiology"
+          },
+          new Doctor()
+          {
+              Name = "Adarsh3",
+              ContactNumber = "9232289112",
+              TreatingAilment = "Orthopedic"
+          },
+          new Doctor()
+          {
+              Name = "Pavith4",
+              ContactNumber = "7569172719",
+              TreatingAilment = "General"
+          },
+          new Doctor()
+          {
+              Name = "Parthe5",
+              ContactNumber = "7169100701",
+              TreatingAilment = "Orthopedic"
+          },
+          new Doctor()
+          {
+              Name = "Prabhakar6",
+              ContactNumber = "8187002119",
+              TreatingAilment = "ENT"
           }
         };
 
