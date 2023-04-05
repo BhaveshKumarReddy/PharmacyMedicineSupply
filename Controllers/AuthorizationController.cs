@@ -49,7 +49,9 @@ namespace PharmacyMedicineSupply.Controllers
                  numBytesRequested: 256/8
             ));
             var res = await _uw.Manager.CreateAsync(newManager);
-            return Ok();
+            var tokenString = GenerateJSONWebToken(res);
+            IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+            return response;
         }
 
         [AllowAnonymous]
@@ -83,6 +85,7 @@ namespace PharmacyMedicineSupply.Controllers
               expires: DateTime.Now.AddMinutes(30),
               signingCredentials: credentials);
 
+            var check = token;
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
