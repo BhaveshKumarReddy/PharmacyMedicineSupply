@@ -32,13 +32,27 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             
         }
 
-        public async Task<MedicineDemand> UpdateMedicineDemand(string MedicineName)
+        public async Task<MedicineDemand> UpdateMedicineDemand(string MedicineName, int count)
         {
             MedicineDemand md=_db.MedicineDemands.Find(MedicineName);
+            md.DemandCount+=count;
             _db.MedicineDemands.Update(md);
             _db.SaveChanges();
             return await _db.MedicineDemands.FindAsync(MedicineName);
 
         }
+        public void ResetMedicineDemand()
+        {
+            var MedicineDemand = _db.MedicineDemands.ToList();
+            foreach(var v in  MedicineDemand)
+            {
+                v.DemandCount = 0;
+                _db.MedicineDemands.Update(v);
+                _db.SaveChanges();
+            }
+
+        }
+        
+       
     }
 }
