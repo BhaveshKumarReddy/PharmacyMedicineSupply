@@ -28,5 +28,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         {
             return _db.MedicineStocks.FirstOrDefault(x => x.Name == medicinename);
         }
+
+        public void UpdateMedicineStock(MedicineStock medicineStock)
+        {
+            _db.MedicineStocks.Update(medicineStock);
+            _db.SaveChanges();
+        }
     }
 }
