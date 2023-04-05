@@ -17,5 +17,6 @@ namespace PharmacySupplyProject.Models
 
         [StringLength(10)]
         public string DoctorContactNumber { get; set; } = string.Empty;
+        public byte Status { get; set; }
     }
 }
