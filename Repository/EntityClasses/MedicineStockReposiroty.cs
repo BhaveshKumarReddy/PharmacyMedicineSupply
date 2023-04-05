@@ -35,6 +35,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             _db.SaveChanges();
         }
 
+        public IEnumerable<String> GetMedicineStocksName()
+        {            
+            return _db.MedicineStocks.Select(x=>x.Name).ToList();
+        }
+
 
     }
 }
