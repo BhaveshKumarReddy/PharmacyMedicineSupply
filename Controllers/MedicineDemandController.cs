@@ -10,8 +10,8 @@ namespace PharmacyMedicineSupply.Controllers
     public class MedicineDemandController : ControllerBase
     {
         private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
-        private readonly IMedicineStockReposiroty<MedicineStock> _medicineStockRepo;
-        public MedicineDemandController(IMedicineDemandRepository<MedicineDemand> demandRepo,IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
+        private readonly IMedicineStockRepository<MedicineStock> _medicineStockRepo;
+        public MedicineDemandController(IMedicineDemandRepository<MedicineDemand> demandRepo,IMedicineStockRepository<MedicineStock> medicineStockRepo)
         {
             _demandRepo = demandRepo;
             _medicineStockRepo = medicineStockRepo;

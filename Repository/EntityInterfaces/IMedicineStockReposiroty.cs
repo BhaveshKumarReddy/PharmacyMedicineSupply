@@ -1,6 +1,6 @@
 ﻿namespace PharmacyMedicineSupply.Repository.EntityInterfaces
 {
-    public interface IMedicineStockReposiroty<MedicineStock>
+    public interface IMedicineStockRepository<MedicineStock>
     {
         Task<string> GetMedicineForSchedule(string ailment);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO.MedicalRepresentative;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
@@ -13,14 +14,16 @@ namespace PharmacyMedicineSupply.Controllers
     {
         public List<Doctor> doctors = new Doctors().getDoc();
 
-        private readonly IMedicineStockReposiroty<MedicineStock> _medicineRepo;
+        private readonly IMedicineStockRepository<MedicineStock> _medicineRepo;
+        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
         private readonly IMedicalRepresentativeRepository<MedicalRepresentativeDTO> _representativesRepo;
         private readonly IRepresentativeScheduleRepository<RepresentativeSchedule> _representativeScheduleRepo;
 
-        public MedicalRepresentativeScheduleController(IMedicineStockReposiroty<MedicineStock> medicineRepo, IMedicalRepresentativeRepository<MedicalRepresentativeDTO> representatives, IRepresentativeScheduleRepository<RepresentativeSchedule> representativeScheduleRepo) {
+        public MedicalRepresentativeScheduleController(IDatesScheduleRepository<DatesSchedule> datesScheduleRepo, IMedicineStockRepository<MedicineStock> medicineRepo, IMedicalRepresentativeRepository<MedicalRepresentativeDTO> representatives, IRepresentativeScheduleRepository<RepresentativeSchedule> representativeScheduleRepo) {
             _medicineRepo = medicineRepo;
             _representativesRepo = representatives;
             _representativeScheduleRepo = representativeScheduleRepo;
+            _datesScheduleRepo = datesScheduleRepo;
         }
 
         [HttpGet]
@@ -34,8 +37,7 @@ namespace PharmacyMedicineSupply.Controllers
 
             List<RepresentativeSchedule> representativeSchedules = new();
 
-            int total_days = 5;
-            int slot_time = 1;
+            int total_days = 5, slot_time = 1, maxDaysExtended = 0;
 
             foreach (KeyValuePair<Doctor, string> data in map_dict)
             {
@@ -80,7 +82,14 @@ namespace PharmacyMedicineSupply.Controllers
                     slot_time += 1;
                 }
 
+                maxDaysExtended = Math.Max(total_days, maxDaysExtended);
             }
+
+            DatesSchedule period = new();
+            period.StartDate = startDate;
+            period.EndDate = startDate.AddDays(maxDaysExtended-1);
+
+            await _datesScheduleRepo.AddDateSchedule(period);
 
             await _representativeScheduleRepo.AddSchedules(representativeSchedules);
 

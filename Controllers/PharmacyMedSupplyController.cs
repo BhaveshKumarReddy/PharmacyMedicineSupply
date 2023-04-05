@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
@@ -11,23 +12,27 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class PharmacyMedSupplyController : ControllerBase
     {
-        private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
         private readonly IPharmacyRepository<Pharmacy> _pharmacyRepo;
+        private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
+        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
+        private readonly IMedicineStockRepository<MedicineStock> _medicineStockRepo;
         private readonly IPharmacyMedSupplyRepository<PharmacyMedSupply> _pharmacyMedSupplyRepo;
-        private readonly IMedicineStockReposiroty<MedicineStock> _medicineStockRepo;
+
         public PharmacyMedSupplyController(IMedicineDemandRepository<MedicineDemand> demandRepo, 
             IPharmacyRepository<Pharmacy> pharmacyRepo, 
             IPharmacyMedSupplyRepository<PharmacyMedSupply> pharmacyMedSupplyRepo, 
-            IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
+            IMedicineStockRepository<MedicineStock> medicineStockRepo,
+            IDatesScheduleRepository<DatesSchedule> datesScheduleRepo)
         {
             _demandRepo = demandRepo;
             _pharmacyRepo = pharmacyRepo;
+            _datesScheduleRepo = datesScheduleRepo;
             _pharmacyMedSupplyRepo = pharmacyMedSupplyRepo;
             _medicineStockRepo = medicineStockRepo;
         }
 
         [HttpGet]
-        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply()
+        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(DateTime startDate)
         {
             int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
             List<Pharmacy> ListOfPharmacies = _pharmacyRepo.GetAllPharmacies();
@@ -72,6 +77,7 @@ namespace PharmacyMedicineSupply.Controllers
                 }
             } 
             _demandRepo.ResetMedicineDemand();
+            _datesScheduleRepo.UpdateSupply(startDate);
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
 
         }
