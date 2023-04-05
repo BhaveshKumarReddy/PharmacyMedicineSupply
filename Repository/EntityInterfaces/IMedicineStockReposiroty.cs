@@ -5,5 +5,6 @@
         Task<string> GetMedicineForSchedule(string ailment);
 
         MedicineStock GetStockByMedicineName(string medicinename);
+        void UpdateMedicineStock(MedicineStock medicineStock);
     }
 }

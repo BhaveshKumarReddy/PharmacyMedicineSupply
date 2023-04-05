@@ -20,7 +20,12 @@ builder.Services.AddTransient<IRepresentativeScheduleRepository<RepresentativeSc
 builder.Services.AddTransient<IMedicalRepresentativeRepository<MedicalRepresentativeDTO>, MedicalRepresentativeRepository>();
 builder.Services.AddTransient<IMedicineStockReposiroty<MedicineStock>, MedicineStockReposiroty>();
 builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
+builder.Services.AddTransient<IMedicineDemandRepository<MedicineDemand>, MedicineDemandRepository>();
+builder.Services.AddTransient<IPharmacyRepository<Pharmacy>, PharmacyRepository>();
+builder.Services.AddTransient<IPharmacyMedSupplyRepository<PharmacyMedSupply>, PharmacyMedSupplyRepository>();
+
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
 
 builder.Services.AddDbContext<PharmacySupplyContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
