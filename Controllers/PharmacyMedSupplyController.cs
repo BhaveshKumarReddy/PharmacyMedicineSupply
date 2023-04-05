@@ -24,7 +24,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet]
         public Task<IEnumerable<PharmacyMedSupply>> GetPharmacyMedSupply()
         {
-            int supply, InStock, demand, PharmacyRecords;
+            int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
             List<Pharmacy> ListOfPharmacies = _pharmacyRepo.GetAllPharmacies();
             var ListOfMedicineDemand =_demandRepo.GetMedicineDemand();
             foreach(var x in ListOfMedicineDemand)
@@ -34,31 +34,34 @@ namespace PharmacyMedicineSupply.Controllers
                 PharmacyRecords = _pharmacyRepo.GetAllPharmacies().Count;
                 if (demand >= InStock)
                 {
-                    supply = InStock / PharmacyRecords;
-                    MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
-                    ms.NumberOfTabletsInStock = 0;
-                    _medicineStockRepo.UpdateMedicineStock(ms);
+                    FinalStock = InStock;
                 }
                 else
                 {
-                    supply = demand/ PharmacyRecords;
-                    MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
-                    ms.NumberOfTabletsInStock-= demand;
-                    _medicineStockRepo.UpdateMedicineStock(ms);
+                    FinalStock = demand;
                 }
-
+                supply = FinalStock / PharmacyRecords;
+                MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
+                ms.NumberOfTabletsInStock -= FinalStock;
+                _medicineStockRepo.UpdateMedicineStock(ms);
+                Supplied = 0;
+                i = 1;
                 foreach (Pharmacy p in ListOfPharmacies)
                 {
                     PharmacyMedSupply pm = new PharmacyMedSupply();
                     pm.PharmacyName = p.Name;
                     pm.MedicineName = x.Name;
                     pm.SupplyCount = supply;
+                    Supplied += supply;
+                    if (i == PharmacyRecords)
+                    {
+                        pm.SupplyCount += (FinalStock - Supplied);
+                    }
                     pm.DateTime= DateTime.Now;
+                    i ++;
                     _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
                 }
-
-            }
-            
+            }            
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
 
         }
