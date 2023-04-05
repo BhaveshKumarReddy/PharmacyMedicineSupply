@@ -6,8 +6,10 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
     {
         List<MedicineDemand> GetMedicineDemand();
         Task<MedicineDemand> AddMedicineDemand(MedicineDemand MedicineDemand);
-        Task<MedicineDemand> UpdateMedicineDemand(String MedicineName);
+        Task<MedicineDemand> UpdateMedicineDemand(String MedicineName, int count);
         void DeleteMedicineDemand(String MedicineName);
+        void ResetMedicineDemand();
+
             
       
     }

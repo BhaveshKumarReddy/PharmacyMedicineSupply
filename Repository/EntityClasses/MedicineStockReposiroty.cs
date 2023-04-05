@@ -34,5 +34,7 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             _db.MedicineStocks.Update(medicineStock);
             _db.SaveChanges();
         }
+
+
     }
 }
