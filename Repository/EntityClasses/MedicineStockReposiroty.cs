@@ -5,10 +5,10 @@ using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Repository.EntityClasses
 {
-    public class MedicineStockReposiroty : IMedicineStockReposiroty<MedicineStock>
+    public class MedicineStockRepository : IMedicineStockRepository<MedicineStock>
     {
         private readonly PharmacySupplyContext _db;
-        public MedicineStockReposiroty(PharmacySupplyContext db)
+        public MedicineStockRepository(PharmacySupplyContext db)
         {
             _db = db;
         }

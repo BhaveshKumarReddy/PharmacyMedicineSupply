@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PharmacyMedicineSupply.Models;
 using PharmacySupplyProject.Models;
 
 namespace PharmacySupplyProject.Models
@@ -43,6 +44,7 @@ namespace PharmacySupplyProject.Models
         public virtual DbSet<PharmacyMedSupply> PharmacyMedicineSupplies { get; set; }
         public virtual DbSet<Pharmacy> Pharmacies { get; set; }
         public virtual DbSet<MedicineDemand> MedicineDemands { get; set; }
+        public virtual DbSet<DatesSchedule> DatesSchedules { get; set; }
 
 
     }

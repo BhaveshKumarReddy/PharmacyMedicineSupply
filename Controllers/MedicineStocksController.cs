@@ -25,6 +25,7 @@ namespace PharmacyMedicineSupply.Controllers
             _context = context;
             _mapper = mapper;
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
         {

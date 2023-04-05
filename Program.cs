@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO.MedicalRepresentative;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.Classes;
@@ -16,9 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddTransient<IDatesScheduleRepository<DatesSchedule> , DatesScheduleRepository>();
 builder.Services.AddTransient<IRepresentativeScheduleRepository<RepresentativeSchedule>, RepresentativeScheduleRepository>();
 builder.Services.AddTransient<IMedicalRepresentativeRepository<MedicalRepresentativeDTO>, MedicalRepresentativeRepository>();
-builder.Services.AddTransient<IMedicineStockReposiroty<MedicineStock>, MedicineStockReposiroty>();
+builder.Services.AddTransient<IMedicineStockRepository<MedicineStock>, MedicineStockRepository>();
 builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
 builder.Services.AddTransient<IMedicineDemandRepository<MedicineDemand>, MedicineDemandRepository>();
 builder.Services.AddTransient<IPharmacyRepository<Pharmacy>, PharmacyRepository>();
