@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -13,7 +15,10 @@ namespace PharmacyMedicineSupply.Controllers
         private readonly IPharmacyRepository<Pharmacy> _pharmacyRepo;
         private readonly IPharmacyMedSupplyRepository<PharmacyMedSupply> _pharmacyMedSupplyRepo;
         private readonly IMedicineStockReposiroty<MedicineStock> _medicineStockRepo;
-        public PharmacyMedSupplyController(IMedicineDemandRepository<MedicineDemand> demandRepo, IPharmacyRepository<Pharmacy> pharmacyRepo, IPharmacyMedSupplyRepository<PharmacyMedSupply> pharmacyMedSupplyRepo, IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
+        public PharmacyMedSupplyController(IMedicineDemandRepository<MedicineDemand> demandRepo, 
+            IPharmacyRepository<Pharmacy> pharmacyRepo, 
+            IPharmacyMedSupplyRepository<PharmacyMedSupply> pharmacyMedSupplyRepo, 
+            IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
         {
             _demandRepo = demandRepo;
             _pharmacyRepo = pharmacyRepo;
@@ -22,7 +27,7 @@ namespace PharmacyMedicineSupply.Controllers
         }
 
         [HttpGet]
-        public Task<IEnumerable<PharmacyMedSupply>> GetPharmacyMedSupply()
+        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply()
         {
             int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
             List<Pharmacy> ListOfPharmacies = _pharmacyRepo.GetAllPharmacies();
@@ -32,6 +37,10 @@ namespace PharmacyMedicineSupply.Controllers
                 InStock= _medicineStockRepo.GetStockByMedicineName(x.Name).NumberOfTabletsInStock;
                 demand = x.DemandCount;
                 PharmacyRecords = _pharmacyRepo.GetAllPharmacies().Count;
+                if (demand == 0)
+                {
+                    continue;
+                }
                 if (demand >= InStock)
                 {
                     FinalStock = InStock;

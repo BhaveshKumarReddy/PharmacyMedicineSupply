@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply
@@ -10,6 +11,7 @@ namespace PharmacyMedicineSupply
         {
 
             CreateMap<MedicineStock, MedicineStockDTO>().ReverseMap();
+            CreateMap<PharmacyMedSupply, PharmacyMedSupplyDTO>().ReverseMap();
 
 
 

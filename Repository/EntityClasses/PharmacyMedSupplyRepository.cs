@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -7,9 +10,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
     public class PharmacyMedSupplyRepository : IPharmacyMedSupplyRepository<PharmacyMedSupply>
     {
         private readonly PharmacySupplyContext _db;
-        public PharmacyMedSupplyRepository(PharmacySupplyContext db)
+        private readonly IMapper _mapper;
+        public PharmacyMedSupplyRepository(PharmacySupplyContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
         public void AddPharmacyMedSupply(PharmacyMedSupply pharmacyMedicineSupply)
         {
@@ -18,9 +23,9 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
  
         }
 
-        public async Task<IEnumerable<PharmacyMedSupply>> GetPharmacyMedicineSupply()
+        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply()
         {
-            return await _db.PharmacyMedicineSupplies.ToListAsync();
+            return await _db.PharmacyMedicineSupplies.Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x)).ToListAsync();
         }
     }
 }
