@@ -10,17 +10,10 @@ namespace PharmacyMedicineSupply.Controllers
     public class MedicineDemandController : ControllerBase
     {
         private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
-        private readonly IPharmacyRepository<Pharmacy> _pharmacyRepo;
-        private readonly IPharmacyMedSupplyRepository<PharmacyMedSupply> _pharmacyMedSupplyRepo;
         private readonly IMedicineStockReposiroty<MedicineStock> _medicineStockRepo;
-        public MedicineDemandController(IMedicineDemandRepository<MedicineDemand> demandRepo,
-            IPharmacyRepository<Pharmacy> pharmacyRepo,
-            IPharmacyMedSupplyRepository<PharmacyMedSupply> pharmacyMedSupplyRepo,
-            IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
+        public MedicineDemandController(IMedicineDemandRepository<MedicineDemand> demandRepo,IMedicineStockReposiroty<MedicineStock> medicineStockRepo)
         {
             _demandRepo = demandRepo;
-            _pharmacyRepo = pharmacyRepo;
-            _pharmacyMedSupplyRepo = pharmacyMedSupplyRepo;
             _medicineStockRepo = medicineStockRepo;
         }
         [HttpGet]
@@ -32,7 +25,7 @@ namespace PharmacyMedicineSupply.Controllers
                 MedicineDemand md = new MedicineDemand();
                 md.Name = name;
                 md.DemandCount = 0;
-                _demandRepo.AddMedicineDemand(md);
+                await _demandRepo.AddMedicineDemand(md);
             }
             return Ok();
         }
