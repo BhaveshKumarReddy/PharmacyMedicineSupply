@@ -6,5 +6,6 @@
 
         MedicineStock GetStockByMedicineName(string medicinename);
         void UpdateMedicineStock(MedicineStock medicineStock);
+        public IEnumerable<string> GetMedicineStocksName();
     }
 }

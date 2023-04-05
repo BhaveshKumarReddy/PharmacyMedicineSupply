@@ -26,6 +26,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet]
         public async Task<List<RepresentativeSchedule>> GetSchedule(DateTime startDate)
         {
+
             DateTime newDate = startDate;
 
             Dictionary<Doctor, string> map_dict = await MapRepsDoctors();

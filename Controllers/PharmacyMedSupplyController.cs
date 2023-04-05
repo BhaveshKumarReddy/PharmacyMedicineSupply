@@ -70,7 +70,8 @@ namespace PharmacyMedicineSupply.Controllers
                     i ++;
                     _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
                 }
-            }            
+            } 
+            _demandRepo.ResetMedicineDemand();
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
 
         }
