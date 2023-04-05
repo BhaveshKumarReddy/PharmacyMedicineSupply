@@ -36,11 +36,7 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 InStock= _medicineStockRepo.GetStockByMedicineName(x.Name).NumberOfTabletsInStock;
                 demand = x.DemandCount;
-                PharmacyRecords = _pharmacyRepo.GetAllPharmacies().Count;
-                if (demand == 0)
-                {
-                    continue;
-                }
+                PharmacyRecords = _pharmacyRepo.GetAllPharmacies().Count;                
                 if (demand >= InStock)
                 {
                     FinalStock = InStock;
@@ -48,6 +44,10 @@ namespace PharmacyMedicineSupply.Controllers
                 else
                 {
                     FinalStock = demand;
+                }
+                if (FinalStock == 0)
+                {
+                    continue;
                 }
                 supply = FinalStock / PharmacyRecords;
                 MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
@@ -70,7 +70,8 @@ namespace PharmacyMedicineSupply.Controllers
                     i ++;
                     _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
                 }
-            }            
+            } 
+            _demandRepo.ResetMedicineDemand();
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
 
         }
