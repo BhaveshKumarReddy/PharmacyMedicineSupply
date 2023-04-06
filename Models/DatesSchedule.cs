@@ -9,5 +9,6 @@ namespace PharmacyMedicineSupply.Models
         public DateTime EndDate { get; set; }
         public byte Completed { get; set; }
         public byte Supplied { get; set; }
+        public int CountCompletedMeets { get; set; }
     }
 }

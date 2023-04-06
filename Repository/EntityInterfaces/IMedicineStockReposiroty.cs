@@ -4,8 +4,8 @@
     {
         Task<string> GetMedicineForSchedule(string ailment);
 
-        MedicineStock GetStockByMedicineName(string medicinename);
-        void UpdateMedicineStock(MedicineStock medicineStock);
-        public IEnumerable<string> GetMedicineStocksName();
+        Task<MedicineStock> GetStockByMedicineName(string medicinename);
+        Task UpdateMedicineStock(MedicineStock medicineStock);
+        public Task<IEnumerable<string>> GetMedicineStocksName();
     }
 }

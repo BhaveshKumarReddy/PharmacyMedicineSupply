@@ -2,6 +2,6 @@
 {
     public interface IPharmacyRepository<Pharmacy>
     {
-        List<Pharmacy> GetAllPharmacies();   
+        Task<List<Pharmacy>> GetAllPharmacies();   
     }
 }
