@@ -73,6 +73,7 @@ namespace PharmacyMedicineSupply.Controllers
             } 
             _demandRepo.ResetMedicineDemand();
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
+            //stored procedure to clear this table.
 
         }
     }
