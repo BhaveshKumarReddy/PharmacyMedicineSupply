@@ -31,17 +31,17 @@ namespace PharmacyMedicineSupply.Controllers
             _medicineStockRepo = medicineStockRepo;
         }
 
-        [HttpGet]
-        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(DateTime startDate)
+        [HttpGet("Supply")]
+        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(DateTime startDate)
         {
             int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
-            List<Pharmacy> ListOfPharmacies = _pharmacyRepo.GetAllPharmacies();
-            var ListOfMedicineDemand =_demandRepo.GetMedicineDemand();
+            List<Pharmacy> ListOfPharmacies = await _pharmacyRepo.GetAllPharmacies();
+            var ListOfMedicineDemand = await _demandRepo.GetMedicineDemand();
             foreach(var x in ListOfMedicineDemand)
             {
-                InStock= _medicineStockRepo.GetStockByMedicineName(x.Name).NumberOfTabletsInStock;
+                InStock= (await _medicineStockRepo.GetStockByMedicineName(x.Name)).NumberOfTabletsInStock;
                 demand = x.DemandCount;
-                PharmacyRecords = _pharmacyRepo.GetAllPharmacies().Count;                
+                PharmacyRecords = ListOfPharmacies.Count;                
                 if (demand >= InStock)
                 {
                     FinalStock = InStock;
@@ -55,9 +55,9 @@ namespace PharmacyMedicineSupply.Controllers
                     continue;
                 }
                 supply = FinalStock / PharmacyRecords;
-                MedicineStock ms = _medicineStockRepo.GetStockByMedicineName(x.Name);
+                MedicineStock ms = await _medicineStockRepo.GetStockByMedicineName(x.Name);
                 ms.NumberOfTabletsInStock -= FinalStock;
-                _medicineStockRepo.UpdateMedicineStock(ms);
+                await _medicineStockRepo.UpdateMedicineStock(ms);
                 Supplied = 0;
                 i = 1;
                 foreach (Pharmacy p in ListOfPharmacies)
@@ -71,16 +71,22 @@ namespace PharmacyMedicineSupply.Controllers
                     {
                         pm.SupplyCount += (FinalStock - Supplied);
                     }
-                    pm.DateTime= DateTime.Now;
+                    pm.DateTime= startDate;
                     i ++;
-                    _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
+                    await _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
                 }
             } 
-            _demandRepo.ResetMedicineDemand();
-            _datesScheduleRepo.UpdateSupply(startDate);
-            return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
+            await _demandRepo.ResetMedicineDemand();
+            await _datesScheduleRepo.UpdateSupply(startDate);
+            return await _pharmacyMedSupplyRepo.GetPharmacyMedicineSupplyByDate(startDate);
             //stored procedure to clear this table.
 
+        }
+
+        [HttpGet("AlreadySupplied")]
+        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetAlreadySuppliedPharma(DateTime startDate)
+        {
+            return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupplyByDate(startDate);
         }
     }
 }

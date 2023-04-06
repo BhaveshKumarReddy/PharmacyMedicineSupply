@@ -6,6 +6,7 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
     public interface IPharmacyMedSupplyRepository<PharmacyMedSupply>
     {
         Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply();
-        void AddPharmacyMedSupply(PharmacyMedSupply pharmacyMedicineSupply);
+        Task AddPharmacyMedSupply(PharmacyMedSupply pharmacyMedicineSupply);
+        Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupplyByDate(DateTime startDate);
     }
 }

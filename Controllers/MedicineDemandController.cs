@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -10,16 +11,24 @@ namespace PharmacyMedicineSupply.Controllers
     public class MedicineDemandController : ControllerBase
     {
         private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
+        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
+        private readonly IRepresentativeScheduleRepository<RepresentativeSchedule> _repSchedule;
         private readonly IMedicineStockRepository<MedicineStock> _medicineStockRepo;
-        public MedicineDemandController(IMedicineDemandRepository<MedicineDemand> demandRepo,IMedicineStockRepository<MedicineStock> medicineStockRepo)
+        public MedicineDemandController(
+            IMedicineDemandRepository<MedicineDemand> demandRepo,
+            IMedicineStockRepository<MedicineStock> medicineStockRepo,
+            IRepresentativeScheduleRepository<RepresentativeSchedule> repSchedule,
+            IDatesScheduleRepository<DatesSchedule> datesScheduleRepo)
         {
             _demandRepo = demandRepo;
             _medicineStockRepo = medicineStockRepo;
+            _repSchedule = repSchedule;
+            _datesScheduleRepo = datesScheduleRepo;
         }
         [HttpGet]
         public async Task<ActionResult> ResetMedicineDemand()
         {
-            IEnumerable<string> Names = _medicineStockRepo.GetMedicineStocksName();
+            IEnumerable<string> Names = await _medicineStockRepo.GetMedicineStocksName();
             foreach(string name in Names)
             {
                 MedicineDemand md = new MedicineDemand();
@@ -35,13 +44,18 @@ namespace PharmacyMedicineSupply.Controllers
         {
             return await _demandRepo.UpdateMedicineDemand(name, Demand);
         }
-        [HttpPut("UpdateAllDemands")]
-        public async Task<ActionResult> UpdateAllMedicineDemand(List<MedicineDemand> MDUpdateList)
+
+
+        [HttpPut("UpdateAllDemands/{repSchedule_ID}")]
+        public async Task<ActionResult> UpdateAllMedicineDemand(int repSchedule_ID, List<MedicineDemand> MDUpdateList)
         {
             foreach(var md in MDUpdateList)
             {
                 await _demandRepo.UpdateMedicineDemand(md.Name, md.DemandCount);
             }
+            await _repSchedule.UpdateStatus(repSchedule_ID);
+            var date = await _repSchedule.GetScheduleById(repSchedule_ID);
+            await _datesScheduleRepo.UpdateCounter(date.Date);
             return Ok();
         }
     }

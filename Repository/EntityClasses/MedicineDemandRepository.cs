@@ -14,8 +14,8 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
 
         public async Task<MedicineDemand> AddMedicineDemand(MedicineDemand MedicineDemand)
         {
-            _db.MedicineDemands.Add(MedicineDemand);
-            _db.SaveChanges();
+            await _db.MedicineDemands.AddAsync(MedicineDemand);
+            await _db.SaveChangesAsync();
             return await _db.MedicineDemands.FindAsync(MedicineDemand.Name);
         }
 
@@ -26,9 +26,9 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             _db.SaveChanges() ;
         }
 
-        public List<MedicineDemand> GetMedicineDemand()
+        public async Task<List<MedicineDemand>> GetMedicineDemand()
         {
-            return  _db.MedicineDemands.ToList();
+            return await _db.MedicineDemands.ToListAsync();
             
         }
 
@@ -37,18 +37,18 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             MedicineDemand md=_db.MedicineDemands.Find(MedicineName);
             md.DemandCount+=count;
             _db.MedicineDemands.Update(md);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return await _db.MedicineDemands.FindAsync(MedicineName);
 
         }
-        public void ResetMedicineDemand()
+        public async Task ResetMedicineDemand()
         {
-            var MedicineDemand = _db.MedicineDemands.ToList();
+            var MedicineDemand = await _db.MedicineDemands.ToListAsync();
             foreach(var v in  MedicineDemand)
             {
                 v.DemandCount = 0;
                 _db.MedicineDemands.Update(v);
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
             }
 
         }

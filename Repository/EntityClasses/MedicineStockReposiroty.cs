@@ -24,20 +24,20 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             return (all_medicines.Length>0)? all_medicines.Substring(2): all_medicines;
         }
 
-        public MedicineStock GetStockByMedicineName(string medicinename)
+        public async Task<MedicineStock> GetStockByMedicineName(string medicinename)
         {
-            return _db.MedicineStocks.FirstOrDefault(x => x.Name == medicinename);
+            return await _db.MedicineStocks.FirstOrDefaultAsync(x => x.Name == medicinename);
         }
 
-        public void UpdateMedicineStock(MedicineStock medicineStock)
+        public async Task UpdateMedicineStock(MedicineStock medicineStock)
         {
             _db.MedicineStocks.Update(medicineStock);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public IEnumerable<String> GetMedicineStocksName()
+        public async Task<IEnumerable<String>> GetMedicineStocksName()
         {            
-            return _db.MedicineStocks.Select(x=>x.Name).ToList();
+            return await _db.MedicineStocks.Select(x=>x.Name).ToListAsync();
         }
 
 
