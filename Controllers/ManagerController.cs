@@ -16,13 +16,13 @@ namespace PharmacyMedicineSupply.Controllers
             _db = db;
         }
 
-        [HttpPost("Checking Email")]
+        [HttpPost("CheckingEmail")]
         public IActionResult  CheckManagerEmail(string email)
         {
             Manager m1=_db.Managers.Where(x=>x.Email==email).FirstOrDefault();    
             if (m1!=null)
             {
-                return BadRequest("Email Already Exists");
+                return Ok(false);
             }
             return Ok(true);
         }
