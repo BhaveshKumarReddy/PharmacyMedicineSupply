@@ -35,7 +35,7 @@ namespace PharmacyMedicineSupply.Controllers
         {
             return await _demandRepo.UpdateMedicineDemand(name, Demand);
         }
-        [HttpPut]
+        [HttpPut("UpdateAllDemands")]
         public async Task<ActionResult> UpdateAllMedicineDemand(List<MedicineDemand> MDUpdateList)
         {
             foreach(var md in MDUpdateList)
