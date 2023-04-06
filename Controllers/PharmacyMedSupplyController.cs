@@ -79,6 +79,7 @@ namespace PharmacyMedicineSupply.Controllers
             _demandRepo.ResetMedicineDemand();
             _datesScheduleRepo.UpdateSupply(startDate);
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupply();
+            //stored procedure to clear this table.
 
         }
     }
