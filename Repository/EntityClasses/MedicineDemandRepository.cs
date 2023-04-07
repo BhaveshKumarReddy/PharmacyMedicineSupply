@@ -34,11 +34,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
 
         public async Task<MedicineDemand> UpdateMedicineDemand(string MedicineName, int count)
         {
-            MedicineDemand md=_db.MedicineDemands.Find(MedicineName);
+            MedicineDemand md= await _db.MedicineDemands.Where(x=>x.Name==MedicineName).SingleOrDefaultAsync();
             md.DemandCount+=count;
             _db.MedicineDemands.Update(md);
             _db.SaveChanges();
-            return await _db.MedicineDemands.FindAsync(MedicineName);
+            return await _db.MedicineDemands.Where(x => x.Name == MedicineName).SingleOrDefaultAsync();
 
         }
         public void ResetMedicineDemand()
