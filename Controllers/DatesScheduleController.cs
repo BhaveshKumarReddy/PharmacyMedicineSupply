@@ -21,15 +21,17 @@ namespace PharmacyMedicineSupply.Controllers
             return await _datesScheduleRepo.GetAllDatesScheduled();
         }
 
-        [HttpGet("/DateAvailability")]
-        public async Task<bool> DateAvailable(DateTime selectedDate) {
+        [HttpGet("/DateAvailability/{selectedDateString}")]
+        public async Task<bool> DateAvailable(string selectedDateString) {
+            DateTime selectedDate = Convert.ToDateTime(selectedDateString);
             var available = await _datesScheduleRepo.CheckAvailability(selectedDate);
             return available;
         }
 
-        [HttpGet("/MarkSupplied")]
-        public async Task<DatesSchedule> MarkSupp(DateTime selectedDate)
+        [HttpGet("/MarkSupplied/{selectedDateString}")]
+        public async Task<DatesSchedule> MarkSupp(string selectedDateString)
         {
+            DateTime selectedDate = Convert.ToDateTime(selectedDateString);
             var date = await _datesScheduleRepo.UpdateSupply(selectedDate);
             return date;
         }
