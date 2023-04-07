@@ -1,4 +1,5 @@
-﻿using PharmacyMedicineSupply.Repository.EntityInterfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Repository.EntityClasses
@@ -15,6 +16,20 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         {
            await _db.RepresentativeSchedules.AddRangeAsync(schedules);
            await _db.SaveChangesAsync();
+        }
+
+        public async Task UpdateStatus(int id)
+        {
+            var newSch = _db.RepresentativeSchedules.FirstOrDefault(x => x.Id == id);
+            var schedule = _db.RepresentativeSchedules.Find(newSch.RepresentativeName, newSch.DoctorName, newSch.Date);
+            schedule.Status = 1;
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<RepresentativeSchedule> GetScheduleById(int id)
+        {
+            var res = await _db.RepresentativeSchedules.FirstOrDefaultAsync(x => x.Id == id);
+            return res;
         }
     }
 }

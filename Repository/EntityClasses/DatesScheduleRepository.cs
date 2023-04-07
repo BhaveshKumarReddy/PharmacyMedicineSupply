@@ -46,5 +46,26 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             await _db.SaveChangesAsync();
             return newDate;
         }
+
+        public async Task UpdateCounter(DateTime repScheduleDate)
+        {
+            var all_datesScheduled = await GetAllDatesScheduled();
+            int total_meets = (new Doctors()).getLength();
+            foreach (var date in all_datesScheduled)
+            {
+                if (repScheduleDate >= date.StartDate && repScheduleDate <= date.EndDate)
+                {
+                    date.CountCompletedMeets += 1;
+                    if(date.CountCompletedMeets >= total_meets)
+                    {
+                        date.Completed = 1;
+                    }
+                    _db.DatesSchedules.Update(date);
+                    _db.SaveChanges();
+                    break;
+                }
+            }
+
+        }
     }
 }
