@@ -26,5 +26,16 @@ namespace PharmacyMedicineSupply.Controllers
             }
             return Ok(true);
         }
+        [HttpPost("CheckingName")]
+        public IActionResult CheckManagerName(string name)
+        {
+            Manager m= _db.Managers.Where(x=>x.Name==name).FirstOrDefault();
+            if (m != null)
+            {
+                return Ok(false);
+            }
+            return Ok(true);
+        }
     }
+        
 }
