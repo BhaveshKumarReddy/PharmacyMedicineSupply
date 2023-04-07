@@ -31,9 +31,10 @@ namespace PharmacyMedicineSupply.Controllers
             _medicineStockRepo = medicineStockRepo;
         }
 
-        [HttpGet("Supply")]
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(DateTime startDate)
+        [HttpGet("Supply/{startDateString}")]
+        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(string startDateString)
         {
+            DateTime startDate = Convert.ToDateTime(startDateString);
             int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
             List<Pharmacy> ListOfPharmacies = await _pharmacyRepo.GetAllPharmacies();
             var ListOfMedicineDemand = await _demandRepo.GetMedicineDemand();
@@ -83,9 +84,10 @@ namespace PharmacyMedicineSupply.Controllers
 
         }
 
-        [HttpGet("AlreadySupplied")]
-        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetAlreadySuppliedPharma(DateTime startDate)
+        [HttpGet("AlreadySupplied/{startDateString}")]
+        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetAlreadySuppliedPharma(string startDateString)
         {
+            DateTime startDate = Convert.ToDateTime(startDateString);
             return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupplyByDate(startDate);
         }
     }
