@@ -39,7 +39,6 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
             _db.MedicineDemands.Update(md);
             await _db.SaveChangesAsync();
             return await _db.MedicineDemands.FindAsync(MedicineName);
-
         }
         public async Task ResetMedicineDemand()
         {
