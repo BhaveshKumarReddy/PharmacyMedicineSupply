@@ -12,7 +12,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         public DatesScheduleRepository(PharmacySupplyContext db) {
             _db = db;
         }
-
+        public async Task<DatesSchedule> GetDatesSchedule(DateTime startDate)
+        {
+            var res = await _db.DatesSchedules.FirstOrDefaultAsync(x => x.StartDate == startDate);
+            return res;
+        }
         public async Task<List<DatesSchedule>> GetAllDatesScheduled()
         {
             return await _db.DatesSchedules.ToListAsync();

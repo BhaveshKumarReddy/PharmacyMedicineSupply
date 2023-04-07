@@ -7,5 +7,6 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
         Task AddSchedules(List<RepresentativeSchedule> schedules);
         Task UpdateStatus(int id);
         Task<RepresentativeSchedule> GetScheduleById(int id);
+        Task<List<RepresentativeSchedule>> GetScheduleByDate(DateTime startDate);
     }
 }
