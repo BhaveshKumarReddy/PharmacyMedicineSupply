@@ -51,7 +51,7 @@ namespace PharmacyMedicineSupply.Controllers
         {
             foreach(var md in MDUpdateList)
             {
-                await _demandRepo.UpdateMedicineDemand(md.Name, md.DemandCount);
+                _demandRepo.UpdateMedicineDemand(md.Name, md.DemandCount);
             }
             await _repSchedule.UpdateStatus(repSchedule_ID);
             var date = await _repSchedule.GetScheduleById(repSchedule_ID);

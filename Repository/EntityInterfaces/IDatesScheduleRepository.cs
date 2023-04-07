@@ -7,5 +7,6 @@
         Task<DatesSchedule> AddDateSchedule(DatesSchedule newSchedule);
         Task<DatesSchedule> UpdateSupply(DateTime date);
         Task UpdateCounter(DateTime repScheduleDate);
+        Task<DatesSchedule> GetDatesSchedule(DateTime startDate);
     }
 }

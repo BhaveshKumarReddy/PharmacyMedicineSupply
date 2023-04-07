@@ -26,10 +26,18 @@ namespace PharmacyMedicineSupply.Controllers
             _datesScheduleRepo = datesScheduleRepo;
         }
 
-        [HttpGet]
-        public async Task<List<RepresentativeSchedule>> GetSchedule(DateTime startDate)
-        {
 
+        [HttpGet("GetScheduleByDate/{startDateString}")]
+        public async Task<List<RepresentativeSchedule>> GetScheduleByDate(string startDateString)
+        {
+            DateTime startDate = Convert.ToDateTime(startDateString);
+            return await _representativeScheduleRepo.GetScheduleByDate(startDate);
+        }
+
+        [HttpGet("CreateSchedule/{startDateString}")]
+        public async Task<List<RepresentativeSchedule>> CreateSchedule(string startDateString)
+        {
+            DateTime startDate = Convert.ToDateTime(startDateString);
             DateTime newDate = startDate;
 
             Dictionary<Doctor, string> map_dict = await MapRepsDoctors();
