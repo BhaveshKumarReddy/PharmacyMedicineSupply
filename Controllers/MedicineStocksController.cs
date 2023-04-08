@@ -30,7 +30,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
         {
-            if (_uw.MedicineStockRepository.GetMedicineStocks() == null)
+            if (await _uw.MedicineStockRepository.GetMedicineStocks() == null)
             {
                 return NotFound();
             }
