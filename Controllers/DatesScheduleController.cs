@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PharmacyMedicineSupply.Models;
+using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -10,29 +11,29 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class DatesScheduleController : ControllerBase
     {
-        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
-        public DatesScheduleController(IDatesScheduleRepository<DatesSchedule> datesScheduleRepo) {
-            _datesScheduleRepo = datesScheduleRepo;
+        private readonly IUnitOfWork _uw;
+        public DatesScheduleController(IUnitOfWork uw) {
+            _uw = uw;
         }
 
         [HttpGet]
         public async Task<List<DatesSchedule>> GetAllDatesScheduled()
         {
-            return await _datesScheduleRepo.GetAllDatesScheduled();
+            return await _uw.DatesScheduleRepository.GetAllDatesScheduled();
         }
 
         [HttpGet("/DateAvailability/{selectedDateString}")]
         public async Task<bool> DateAvailable(string selectedDateString) {
             DateTime selectedDate = Convert.ToDateTime(selectedDateString);
-            var available = await _datesScheduleRepo.CheckAvailability(selectedDate);
+            var available = await _uw.DatesScheduleRepository.CheckAvailability(selectedDate);
             return available;
         }
 
         [HttpGet("/MarkSupplied/{selectedDateString}")]
-        public async Task<DatesSchedule> MarkSupp(string selectedDateString)
+        public async Task<DatesSchedule> MarkSupplied(string selectedDateString)
         {
             DateTime selectedDate = Convert.ToDateTime(selectedDateString);
-            var date = await _datesScheduleRepo.UpdateSupply(selectedDate);
+            var date = await _uw.DatesScheduleRepository.UpdateSupply(selectedDate);
             return date;
         }
     }

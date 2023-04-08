@@ -48,7 +48,7 @@ namespace PharmacyMedicineSupply.Controllers
                  iterationCount: 1000,
                  numBytesRequested: 256/8
             ));
-            var res = await _uw.Manager.CreateAsync(newManager);
+            var res = await _uw.ManagerRepository.CreateAsync(newManager);
             var tokenString = GenerateJSONWebToken(res);
             IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
             return response;
@@ -91,7 +91,7 @@ namespace PharmacyMedicineSupply.Controllers
 
         private async Task<Manager> AuthenticateUser(ManagerLoginDTO _manager)
         {
-            Manager manager = await _uw.Manager.GetManager(_manager);
+            Manager manager = await _uw.ManagerRepository.GetManager(_manager);
             if(manager is null)
             {
                 return null;

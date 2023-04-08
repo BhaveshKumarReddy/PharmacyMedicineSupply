@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO.MedicalRepresentative;
+using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 using System.Collections.Generic;
@@ -12,26 +13,21 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicalRepresentativeScheduleController : ControllerBase
     {
-        public List<Doctor> doctors = new Doctors().getDoc();
 
-        private readonly IMedicineStockRepository<MedicineStock> _medicineRepo;
-        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
-        private readonly IMedicalRepresentativeRepository<MedicalRepresentativeDTO> _representativesRepo;
-        private readonly IRepresentativeScheduleRepository<RepresentativeSchedule> _representativeScheduleRepo;
+        private readonly IUnitOfWork _uw;
 
-        public MedicalRepresentativeScheduleController(IDatesScheduleRepository<DatesSchedule> datesScheduleRepo, IMedicineStockRepository<MedicineStock> medicineRepo, IMedicalRepresentativeRepository<MedicalRepresentativeDTO> representatives, IRepresentativeScheduleRepository<RepresentativeSchedule> representativeScheduleRepo) {
-            _medicineRepo = medicineRepo;
-            _representativesRepo = representatives;
-            _representativeScheduleRepo = representativeScheduleRepo;
-            _datesScheduleRepo = datesScheduleRepo;
+        public MedicalRepresentativeScheduleController(IUnitOfWork uw) {
+            _uw = uw;
         }
+
+        public List<Doctor> doctors = new Doctors().getDoc();
 
 
         [HttpGet("GetScheduleByDate/{startDateString}")]
         public async Task<List<RepresentativeSchedule>> GetScheduleByDate(string startDateString)
         {
             DateTime startDate = Convert.ToDateTime(startDateString);
-            return await _representativeScheduleRepo.GetScheduleByDate(startDate);
+            return await _uw.RepresentativeScheduleRepository.GetScheduleByDate(startDate);
         }
 
         [HttpGet("CreateSchedule/{startDateString}")]
@@ -57,7 +53,7 @@ namespace PharmacyMedicineSupply.Controllers
                 }
                 else
                 {
-                    medicines = await _medicineRepo.GetMedicineForSchedule(data.Key.TreatingAilment);
+                    medicines = await _uw.MedicineStockRepository.GetMedicineForSchedule(data.Key.TreatingAilment);
                     ailment_dict.Add(treating_ailment, medicines);
                 }
 
@@ -97,16 +93,16 @@ namespace PharmacyMedicineSupply.Controllers
             period.StartDate = startDate;
             period.EndDate = startDate.AddDays(maxDaysExtended-1);
 
-            await _datesScheduleRepo.AddDateSchedule(period);
+            await _uw.DatesScheduleRepository.AddDateSchedule(period);
 
-            await _representativeScheduleRepo.AddSchedules(representativeSchedules);
+            await _uw.RepresentativeScheduleRepository.AddSchedules(representativeSchedules);
 
             return representativeSchedules;
         }
 
         private async Task<Dictionary<Doctor,string>> MapRepsDoctors()
         {
-            List<MedicalRepresentativeDTO> reps = await _representativesRepo.GetMedicalRepresentatives();
+            List<MedicalRepresentativeDTO> reps = await _uw.MedicalRepresentativeRepository.GetMedicalRepresentatives();
 
             int days = 5;
 
