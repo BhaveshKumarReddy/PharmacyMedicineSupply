@@ -19,7 +19,7 @@ namespace PharmacyMedicineSupply.Repository
             PharmacyRepository = new PharmacyRepository(_db);
             MedicineDemandRepository = new MedicineDemandRepository(_db);
             DatesScheduleRepository = new DatesScheduleRepository(_db);
-            MedicineStockRepository = new MedicineStockRepository(_db);
+            MedicineStockRepository = new MedicineStockRepository(_db, _mapper);
             PharmacyMedSupplyRepository = new PharmacyMedSupplyRepository(_db, _mapper);
             MedicalRepresentativeRepository = new MedicalRepresentativeRepository(_db, _mapper);
             RepresentativeScheduleRepository = new RepresentativeScheduleRepository(_db, DatesScheduleRepository);

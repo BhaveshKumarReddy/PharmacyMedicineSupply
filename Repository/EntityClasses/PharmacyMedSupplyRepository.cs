@@ -23,15 +23,15 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
  
         }
 
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply()
+        public async Task<List<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply()
         {
             return await _db.PharmacyMedicineSupplies.Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x)).ToListAsync();
         }
 
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupplyByDate(DateTime startDate)
+        public async Task<List<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupplyByDate(DateTime startDate)
         {
-            var list = await _db.PharmacyMedicineSupplies.Where(x => x.DateTime == startDate).ToListAsync();
-            return list.Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x));
+            var list = await _db.PharmacyMedicineSupplies.Where(x => x.DateTime == startDate).Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x)).ToListAsync();
+            return list;
         }
     }
 }

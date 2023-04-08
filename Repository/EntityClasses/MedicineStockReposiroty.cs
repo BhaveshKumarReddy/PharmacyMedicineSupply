@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -8,9 +10,11 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
     public class MedicineStockRepository : IMedicineStockRepository<MedicineStock>
     {
         private readonly PharmacySupplyContext _db;
-        public MedicineStockRepository(PharmacySupplyContext db)
+        private readonly IMapper _mapper;
+        public MedicineStockRepository(PharmacySupplyContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
         public async Task<string> GetMedicineForSchedule(string ailment)
@@ -39,7 +43,10 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         {            
             return await _db.MedicineStocks.Select(x=>x.Name).ToListAsync();
         }
-
+        public async Task<List<MedicineStockDTO>> GetMedicineStocks()
+        {
+            return await _db.MedicineStocks.Select(x => _mapper.Map<MedicineStockDTO>(x)).ToListAsync();
+        }
 
     }
 }
