@@ -9,6 +9,8 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
         Task<Manager> AddManager(Manager manager);
 
         Task<Manager> GetManager(ManagerLoginDTO manager);
+        Task<Manager> GetManagerbyname(string name);
+        Task<Manager> GetManagerbymail(string email);
     }
 }
 

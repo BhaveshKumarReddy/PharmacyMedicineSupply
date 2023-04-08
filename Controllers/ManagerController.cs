@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Repository.Classes;
+using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
@@ -10,16 +11,16 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly PharmacySupplyContext _db;
-        public ManagerController(PharmacySupplyContext db)
+        private readonly IManagerRepository _managerRepo;
+        public ManagerController(IManagerRepository managerRepository)
         {
-            _db = db;
+            _managerRepo = managerRepository;
         }
 
         [HttpPost("CheckingEmail")]
-        public IActionResult  CheckManagerEmail(string email)
+        public async Task<IActionResult> CheckManagerEmail(string email)
         {
-            Manager m1=_db.Managers.Where(x=>x.Email==email).FirstOrDefault();    
+            Manager m1= await _managerRepo.GetManagerbymail(email);
             if (m1!=null)
             {
                 return Ok(false);
@@ -27,9 +28,9 @@ namespace PharmacyMedicineSupply.Controllers
             return Ok(true);
         }
         [HttpPost("CheckingName")]
-        public IActionResult CheckManagerName(string name)
+        public async Task<IActionResult> CheckManagerName(string name)
         {
-            Manager m= _db.Managers.Where(x=>x.Name==name).FirstOrDefault();
+            Manager m= await _managerRepo.GetManagerbyname(name);
             if (m != null)
             {
                 return Ok(false);
