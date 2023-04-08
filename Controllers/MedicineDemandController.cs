@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
@@ -20,35 +22,85 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("ResetMedicineDemand")]
         public async Task<ActionResult> ResetMedicineDemand()
         {
-            IEnumerable<string> Names = await _uw.MedicineStockRepository.GetMedicineStocksName();
-            foreach(string name in Names)
+            try
             {
-                MedicineDemand md = new MedicineDemand();
-                md.Name = name;
-                md.DemandCount = 0;
-                await _uw.MedicineDemandRepository.AddMedicineDemand(md);
+                IEnumerable<string> Names = await _uw.MedicineStockRepository.GetMedicineStocksName();
+                foreach (string name in Names)
+                {
+                    MedicineDemand md = new MedicineDemand();
+                    md.Name = name;
+                    md.DemandCount = 0;
+                    await _uw.MedicineDemandRepository.AddMedicineDemand(md);
+                }
+                return Ok();
             }
-            return Ok();
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpPut]
         public async Task<ActionResult<MedicineDemand>> UpdateMedicneDemand(string name, int Demand)
         {
-            return await _uw.MedicineDemandRepository.UpdateMedicineDemand(name, Demand);
+            try
+            {
+                return await _uw.MedicineDemandRepository.UpdateMedicineDemand(name, Demand);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [HttpPut("UpdateAllDemands/{repSchedule_ID}")]
         public async Task<ActionResult> UpdateAllMedicineDemand(int repSchedule_ID, List<MedicineDemand> MDUpdateList)
         {
-            foreach(var md in MDUpdateList)
+            try
             {
-                var x = await _uw.MedicineDemandRepository.UpdateMedicineDemand(md.Name, md.DemandCount);
+                foreach (var md in MDUpdateList)
+                {
+                    var x = await _uw.MedicineDemandRepository.UpdateMedicineDemand(md.Name, md.DemandCount);
+                }
+                await _uw.RepresentativeScheduleRepository.UpdateStatus(repSchedule_ID);
+                var date = await _uw.RepresentativeScheduleRepository.GetScheduleById(repSchedule_ID);
+                await _uw.DatesScheduleRepository.UpdateCounter(date.Date);
+                return Ok();
             }
-            await _uw.RepresentativeScheduleRepository.UpdateStatus(repSchedule_ID);
-            var date = await _uw.RepresentativeScheduleRepository.GetScheduleById(repSchedule_ID);
-            await _uw.DatesScheduleRepository.UpdateCounter(date.Date);
-            return Ok();
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

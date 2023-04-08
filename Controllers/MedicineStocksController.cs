@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,9 +7,11 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 using PharmacyMedicineSupply.Repository;
+using PharmacyMedicineSupply.Repository.EntityClasses;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
@@ -18,23 +21,33 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicineStocksController : ControllerBase
     {
-        private readonly PharmacySupplyContext _context;
-        private readonly IMapper _mapper;
-
-        public MedicineStocksController(PharmacySupplyContext context, IMapper mapper)
+        private readonly IUnitOfWork _uw;
+        
+        public MedicineStocksController(IUnitOfWork uw)
         {
-            _context = context;
-            _mapper = mapper;
+            _uw = uw;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
         {
-            if (_context.MedicineStocks == null)
+            if (_uw.MedicineStockRepository.GetMedicineStocks() == null)
             {
                 return NotFound();
             }
-            return await _context.MedicineStocks.Select(x => _mapper.Map<MedicineStockDTO>(x)).ToListAsync();
+            try
+            {
+                return await _uw.MedicineStockRepository.GetMedicineStocks();
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }

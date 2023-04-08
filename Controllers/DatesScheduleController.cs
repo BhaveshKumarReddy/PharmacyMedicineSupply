@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
@@ -17,24 +19,28 @@ namespace PharmacyMedicineSupply.Controllers
         }
 
         [HttpGet]
-        public async Task<List<DatesSchedule>> GetAllDatesScheduled()
+        public async Task<ActionResult<IEnumerable<DatesSchedule>>> GetAllDatesScheduled()
         {
-            return await _uw.DatesScheduleRepository.GetAllDatesScheduled();
+            try
+            {
+                return await _uw.DatesScheduleRepository.GetAllDatesScheduled();
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet("/DateAvailability/{selectedDateString}")]
-        public async Task<bool> DateAvailable(string selectedDateString) {
+        public async Task<ActionResult<bool>> DateAvailable(string selectedDateString) {
             DateTime selectedDate = Convert.ToDateTime(selectedDateString);
             var available = await _uw.DatesScheduleRepository.CheckAvailability(selectedDate);
             return available;
-        }
-
-        [HttpGet("/MarkSupplied/{selectedDateString}")]
-        public async Task<DatesSchedule> MarkSupplied(string selectedDateString)
-        {
-            DateTime selectedDate = Convert.ToDateTime(selectedDateString);
-            var date = await _uw.DatesScheduleRepository.UpdateSupply(selectedDate);
-            return date;
         }
     }
 }

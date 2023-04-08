@@ -10,13 +10,9 @@ namespace PharmacyMedicineSupply
     {
         public AutoMapperProfile()
         {
-
             CreateMap<MedicineStock, MedicineStockDTO>().ReverseMap();
             CreateMap<PharmacyMedSupply, PharmacyMedSupplyDTO>().ReverseMap();
-
             CreateMap<MedicalRepresentative, MedicalRepresentativeDTO>().ReverseMap();
-
-
         }
     }
 }
