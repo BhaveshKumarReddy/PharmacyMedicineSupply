@@ -58,13 +58,14 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 DateTime startDate = Convert.ToDateTime(startDateString);
                 DateTime newDate = startDate;
+                DateTime endDate = startDate;
 
                 Dictionary<Doctor, string> map_dict = await MapRepsDoctors();
                 Dictionary<string, string> ailment_dict = new();
 
                 List<RepresentativeSchedule> representativeSchedules = new();
 
-                int total_days = 5, slot_time = 1, maxDaysExtended = 0;
+                int total_days = 5, slot_time = 1;
 
                 foreach (KeyValuePair<Doctor, string> data in map_dict)
                 {
@@ -97,6 +98,7 @@ namespace PharmacyMedicineSupply.Controllers
 
                     representativeSchedules.Add(schedule);
 
+                    endDate = (newDate>endDate)?newDate:endDate;
                     newDate = newDate.AddDays(1);
 
                     if (newDate.Equals(startDate.AddDays(total_days)))
@@ -109,13 +111,11 @@ namespace PharmacyMedicineSupply.Controllers
                     {
                         slot_time += 1;
                     }
-
-                    maxDaysExtended = Math.Max(total_days, maxDaysExtended);
                 }
 
                 DatesSchedule period = new();
                 period.StartDate = startDate;
-                period.EndDate = startDate.AddDays(maxDaysExtended - 1);
+                period.EndDate = endDate;
 
                 await _uw.DatesScheduleRepository.AddDateSchedule(period);
 
