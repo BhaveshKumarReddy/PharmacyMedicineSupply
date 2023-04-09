@@ -48,7 +48,7 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         }
         public async Task<MedicineStockResponse> GetMedicineStocks(int page)
         {
-            var pageResults = 3f;
+            var pageResults = 4f;
             var pageCount = Math.Ceiling(_db.MedicineStocks.Count() / pageResults);
             var medicines = await _db.MedicineStocks
                                   .Skip((page - 1) * (int)pageResults)

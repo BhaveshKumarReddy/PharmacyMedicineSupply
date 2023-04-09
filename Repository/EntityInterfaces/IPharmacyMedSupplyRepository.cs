@@ -7,6 +7,6 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
     {
         Task<List<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply();
         Task AddPharmacyMedSupply(PharmacyMedSupply pharmacyMedicineSupply);
-        Task<List<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupplyByDate(DateTime startDate);
+        Task<PharmacyMedSupplyResponse> GetPharmacyMedicineSupplyByDate(int page, DateTime startDate);
     }
 }
