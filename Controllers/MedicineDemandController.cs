@@ -34,6 +34,14 @@ namespace PharmacyMedicineSupply.Controllers
                 }
                 return Ok();
             }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (NullReferenceException ex)
             {
                 return BadRequest(ex.Message);
@@ -42,7 +50,6 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpPut]

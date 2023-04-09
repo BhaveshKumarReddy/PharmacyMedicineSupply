@@ -17,7 +17,7 @@ namespace PharmacyMedicineSupply.Controllers
     {
 
         private readonly IUnitOfWork _uw;
-
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(MedicalRepresentativeScheduleController));
         public MedicalRepresentativeScheduleController(IUnitOfWork uw) {
             _uw = uw;
         }
@@ -28,25 +28,30 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("GetScheduleByDate/{startDateString}")]
         public async Task<ActionResult<IEnumerable<RepresentativeSchedule>>> GetScheduleByDate(string startDateString)
         {
+            _log4net.Info("Selecting Representative schedule by date is invoked");
             DateTime startDate = Convert.ToDateTime(startDateString);
             try
-            {
+            {                
                 return await _uw.RepresentativeScheduleRepository.GetScheduleByDate(startDate);
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }

@@ -16,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+builder.Logging.AddLog4Net();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddTransient<IDatesScheduleRepository<DatesSchedule> , DatesScheduleRepository>();
 builder.Services.AddTransient<IRepresentativeScheduleRepository<RepresentativeSchedule>, RepresentativeScheduleRepository>();
 builder.Services.AddTransient<IMedicalRepresentativeRepository<MedicalRepresentativeDTO>, MedicalRepresentativeRepository>();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.Classes;
@@ -21,22 +22,62 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPost("CheckingEmail")]
         public async Task<IActionResult> CheckManagerEmail(string email)
         {
-            Manager m1= await _uw.ManagerRepository.GetManagerbymail(email);
-            if (m1!=null)
+            try
             {
-                return Ok(false);
+                Manager m1 = await _uw.ManagerRepository.GetManagerbymail(email);
+                if (m1 != null)
+                {
+                    return Ok(false);
+                }
+                return Ok(true);
             }
-            return Ok(true);
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         [HttpPost("CheckingName")]
         public async Task<IActionResult> CheckManagerName(string name)
         {
-            Manager m= await _uw.ManagerRepository.GetManagerbyname(name);
-            if (m != null)
+            try
             {
-                return Ok(false);
+                Manager m = await _uw.ManagerRepository.GetManagerbyname(name);
+                if (m != null)
+                {
+                    return Ok(false);
+                }
+                return Ok(true);
             }
-            return Ok(true);
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
         
