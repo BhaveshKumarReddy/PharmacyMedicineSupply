@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Models.DTO.MedicineStock;
 using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityClasses;
@@ -27,16 +28,16 @@ namespace PharmacyMedicineSupply.Controllers
             _uw = uw;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
+        [HttpGet("{page}")]
+        public async Task<ActionResult<MedicineStockResponse>> MedicineStockInformation(int page)
         {
-            if (await _uw.MedicineStockRepository.GetMedicineStocks() == null)
+            if (await _uw.MedicineStockRepository.GetMedicineStocks(page) == null)
             {
                 return NotFound();
             }
             try
             {
-                return await _uw.MedicineStockRepository.GetMedicineStocks();
+                return await _uw.MedicineStockRepository.GetMedicineStocks(page);
             }
             catch (NullReferenceException ex)
             {

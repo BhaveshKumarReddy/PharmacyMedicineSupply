@@ -1,4 +1,5 @@
-﻿using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+﻿using PharmacyMedicineSupply.Models.DTO.MedicineStock;
+using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 
 namespace PharmacyMedicineSupply.Repository.EntityInterfaces
 {
@@ -9,6 +10,6 @@ namespace PharmacyMedicineSupply.Repository.EntityInterfaces
         Task<MedicineStock> GetStockByMedicineName(string medicinename);
         Task UpdateMedicineStock(MedicineStock medicineStock);
         Task<IEnumerable<string>> GetMedicineStocksName();
-        Task<List<MedicineStockDTO>> GetMedicineStocks();
+        Task<MedicineStockResponse> GetMedicineStocks(int page);
     }
 }
