@@ -13,6 +13,7 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class ManagerController : ControllerBase
     {
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(ManagerController));
         private readonly IUnitOfWork _uw;
         public ManagerController(IUnitOfWork uw)
         {
@@ -22,6 +23,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPost("CheckingEmail")]
         public async Task<IActionResult> CheckManagerEmail(string email)
         {
+            _log4net.Info("Check Email Invoked");
             try
             {
                 Manager m1 = await _uw.ManagerRepository.GetManagerbymail(email);
@@ -33,18 +35,22 @@ namespace PharmacyMedicineSupply.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
 
@@ -52,6 +58,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPost("CheckingName")]
         public async Task<IActionResult> CheckManagerName(string name)
         {
+            _log4net.Info("Check name Invoked");
             try
             {
                 Manager m = await _uw.ManagerRepository.GetManagerbyname(name);
@@ -63,18 +70,22 @@ namespace PharmacyMedicineSupply.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
 

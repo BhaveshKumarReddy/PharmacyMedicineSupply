@@ -13,6 +13,7 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicineDemandController : ControllerBase
     {
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(MedicineDemandController));
         private readonly IUnitOfWork _uw;
         public MedicineDemandController(IUnitOfWork uw)
         {
@@ -22,6 +23,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("ResetMedicineDemand")]
         public async Task<ActionResult> ResetMedicineDemand()
         {
+            _log4net.Info("Reset Medicine Demand Invoked");
             try
             {
                 IEnumerable<string> Names = await _uw.MedicineStockRepository.GetMedicineStocksName();
@@ -32,22 +34,27 @@ namespace PharmacyMedicineSupply.Controllers
                     md.DemandCount = 0;
                     await _uw.MedicineDemandRepository.AddMedicineDemand(md);
                 }
+                _log4net.Info("Reset Successful");
                 return Ok();
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -55,24 +62,29 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPut]
         public async Task<ActionResult<MedicineDemand>> UpdateMedicneDemand(string name, int Demand)
         {
+            _log4net.Info("Update Medicine Demand Invoked");
             try
             {
                 return await _uw.MedicineDemandRepository.UpdateMedicineDemand(name, Demand);
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -81,6 +93,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPut("UpdateAllDemands/{repSchedule_ID}")]
         public async Task<ActionResult> UpdateAllMedicineDemand(int repSchedule_ID, List<MedicineDemand> MDUpdateList)
         {
+            _log4net.Info("Update Demand with list Invoked");
             try
             {
                 foreach (var md in MDUpdateList)
@@ -90,22 +103,27 @@ namespace PharmacyMedicineSupply.Controllers
                 await _uw.RepresentativeScheduleRepository.UpdateStatus(repSchedule_ID);
                 var date = await _uw.RepresentativeScheduleRepository.GetScheduleById(repSchedule_ID);
                 await _uw.DatesScheduleRepository.UpdateCounter(date.Date);
+                _log4net.Info("Updated Demand, Representative schedule status and Dates schedule counter");
                 return Ok();
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
