@@ -29,7 +29,7 @@ namespace PharmacyMedicineSupply.Controllers
             try
             {
                 DateTime startDate = Convert.ToDateTime(startDateString);
-                int supply, InStock, demand, PharmacyRecords, FinalStock, Supplied, i;
+                int supply, InStock, demand, PharmacyRecords, FinalStock, RemSupply;
                 List<Pharmacy> ListOfPharmacies = await _uw.PharmacyRepository.GetAllPharmacies();
                 var ListOfMedicineDemand = await _uw.MedicineDemandRepository.GetMedicineDemand();
                 foreach (var x in ListOfMedicineDemand)
@@ -53,21 +53,19 @@ namespace PharmacyMedicineSupply.Controllers
                     MedicineStock ms = await _uw.MedicineStockRepository.GetStockByMedicineName(x.Name);
                     ms.NumberOfTabletsInStock -= FinalStock;
                     await _uw.MedicineStockRepository.UpdateMedicineStock(ms);
-                    Supplied = 0;
-                    i = 1;
+                    RemSupply = FinalStock - (supply * PharmacyRecords);
                     foreach (Pharmacy p in ListOfPharmacies)
                     {
                         PharmacyMedSupply pm = new PharmacyMedSupply();
                         pm.PharmacyName = p.Name;
                         pm.MedicineName = x.Name;
                         pm.SupplyCount = supply;
-                        Supplied += supply;
-                        if (i == PharmacyRecords)
+                        if (RemSupply > 0) 
                         {
-                            pm.SupplyCount += (FinalStock - Supplied);
+                            pm.SupplyCount += 1;
+                            RemSupply -= 1;
                         }
                         pm.DateTime = startDate;
-                        i++;
                         await _uw.PharmacyMedSupplyRepository.AddPharmacyMedSupply(pm);
                     }
                 }
@@ -101,6 +99,14 @@ namespace PharmacyMedicineSupply.Controllers
                 DateTime startDate = Convert.ToDateTime(startDateString);
                 return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(startDate);
             }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (NullReferenceException ex)
             {
                 return BadRequest(ex.Message);
@@ -109,7 +115,6 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
     }
 }

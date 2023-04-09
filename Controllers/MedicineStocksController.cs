@@ -30,13 +30,21 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
         {
-            if (_uw.MedicineStockRepository.GetMedicineStocks() == null)
+            if (await _uw.MedicineStockRepository.GetMedicineStocks() == null)
             {
                 return NotFound();
             }
             try
             {
                 return await _uw.MedicineStockRepository.GetMedicineStocks();
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
@@ -46,7 +54,6 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
     }
 }
