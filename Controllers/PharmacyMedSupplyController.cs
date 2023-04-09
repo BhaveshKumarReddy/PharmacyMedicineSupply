@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
+using PharmacyMedicineSupply.Models.DTO.MedicineStock;
 using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
 using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
@@ -23,8 +24,8 @@ namespace PharmacyMedicineSupply.Controllers
             _uw = uw;
         }
 
-        [HttpGet("Supply/{startDateString}")]
-        public async Task<ActionResult<IEnumerable<PharmacyMedSupplyDTO>>> GetPharmacyMedSupply(string startDateString)
+        [HttpGet("Supply/{page}/{startDateString}")]
+        public async Task<ActionResult<PharmacyMedSupplyResponse>> GetPharmacyMedSupply(int page, string startDateString)
         {
             try
             {
@@ -71,7 +72,7 @@ namespace PharmacyMedicineSupply.Controllers
                 }
                 await _uw.MedicineDemandRepository.ResetMedicineDemand();
                 await _uw.DatesScheduleRepository.UpdateSupply(startDate);
-                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(startDate);
+                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(page, startDate);
             }
             catch (DbUpdateException ex)
             {
@@ -91,13 +92,13 @@ namespace PharmacyMedicineSupply.Controllers
             }
         }
 
-        [HttpGet("AlreadySupplied/{startDateString}")]
-        public async Task<ActionResult<IEnumerable<PharmacyMedSupplyDTO>>> GetAlreadySuppliedPharma(string startDateString)
+        [HttpGet("AlreadySupplied/{page}/{startDateString}")]
+        public async Task<ActionResult<PharmacyMedSupplyResponse>> GetAlreadySuppliedPharma(int page, string startDateString)
         {
             try
             {
                 DateTime startDate = Convert.ToDateTime(startDateString);
-                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(startDate);
+                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(page, startDate);
             }
             catch (DbUpdateException ex)
             {
