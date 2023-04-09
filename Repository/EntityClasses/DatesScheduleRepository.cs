@@ -24,11 +24,26 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
 
         public async Task<bool> CheckAvailability(DateTime selectedDate)
         {
+            int numberOfDays = 5;
+            int noOfDoctors = new Doctors().getDoc().Count;
+            if ( noOfDoctors < numberOfDays)
+            {
+                numberOfDays = noOfDoctors;
+            }
+            if ((int)selectedDate.DayOfWeek > (7 - numberOfDays))
+            {
+                numberOfDays += 1;
+            }
             var all_datesScheduled = await GetAllDatesScheduled();
             bool available = true;
             foreach(var date in all_datesScheduled)
             {
                 if(selectedDate >= date.StartDate && selectedDate <= date.EndDate)
+                {
+                    available = false;
+                    break;
+                }
+                if(selectedDate.AddDays(numberOfDays - 1) >= date.StartDate && selectedDate.AddDays(numberOfDays - 1) <= date.EndDate)
                 {
                     available = false;
                     break;

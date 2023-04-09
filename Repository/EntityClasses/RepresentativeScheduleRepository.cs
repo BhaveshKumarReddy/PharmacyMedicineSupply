@@ -30,8 +30,8 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
 
         public async Task UpdateStatus(int id)
         {
-            var newSch = _db.RepresentativeSchedules.FirstOrDefault(x => x.Id == id);
-            var schedule = _db.RepresentativeSchedules.Find(newSch.RepresentativeName, newSch.DoctorName, newSch.Date);
+            var newSchedule = _db.RepresentativeSchedules.FirstOrDefault(x => x.Id == id);
+            var schedule = _db.RepresentativeSchedules.Find(newSchedule.RepresentativeName, newSchedule.DoctorName, newSchedule.Date);
             schedule.Status = 1;
             await _db.SaveChangesAsync();
         }

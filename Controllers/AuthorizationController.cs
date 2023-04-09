@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO;
@@ -24,6 +26,7 @@ namespace PharmacyMedicineSupply.Controllers
     {
         private readonly IConfiguration _config; 
         private readonly IUnitOfWork _uw;
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(AuthorizationController));
         public AuthorizationController(IConfiguration config, IUnitOfWork uw)
         {
             _config = config;
@@ -34,6 +37,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(ManagerRegisterDTO _manager)
         {
+            _log4net.Info("Register is invoked");
             Manager newManager = new Manager()
             {
                 Name = _manager.Name,
@@ -48,24 +52,65 @@ namespace PharmacyMedicineSupply.Controllers
                  iterationCount: 1000,
                  numBytesRequested: 256/8
             ));
-            var res = await _uw.Manager.CreateAsync(newManager);
-            var tokenString = GenerateJSONWebToken(res);
-            IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
-            return response;
+            try
+            {
+                var res = await _uw.ManagerRepository.CreateAsync(newManager);
+                var tokenString = GenerateJSONWebToken(res);
+                IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+                _log4net.Info("Registered Successfully");
+                return response;
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
         }
 
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> Login(ManagerLoginDTO _manager)
         {
+            _log4net.Info("Login is invoked");
             IActionResult response = Unauthorized("Invalid Credentials!");
-            var manager = await AuthenticateUser(_manager);
-            if (manager != null)
+            try
             {
-                var tokenString = GenerateJSONWebToken(manager);
-                response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+                var manager = await AuthenticateUser(_manager);
+                if (manager != null)
+                {
+                    var tokenString = GenerateJSONWebToken(manager);
+                    response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+                    _log4net.Info("Login Successful");
+                }
+                return response;
             }
-            return response;
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private string GenerateJSONWebToken(Manager managerInfo)
@@ -91,7 +136,7 @@ namespace PharmacyMedicineSupply.Controllers
 
         private async Task<Manager> AuthenticateUser(ManagerLoginDTO _manager)
         {
-            Manager manager = await _uw.Manager.GetManager(_manager);
+            Manager manager = await _uw.ManagerRepository.GetManager(_manager);
             if(manager is null)
             {
                 return null;

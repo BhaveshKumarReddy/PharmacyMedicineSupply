@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
+using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
@@ -10,53 +13,101 @@ namespace PharmacyMedicineSupply.Controllers
     [ApiController]
     public class MedicineDemandController : ControllerBase
     {
-        private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
-        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
-        private readonly IRepresentativeScheduleRepository<RepresentativeSchedule> _repSchedule;
-        private readonly IMedicineStockRepository<MedicineStock> _medicineStockRepo;
-        public MedicineDemandController(
-            IMedicineDemandRepository<MedicineDemand> demandRepo,
-            IMedicineStockRepository<MedicineStock> medicineStockRepo,
-            IRepresentativeScheduleRepository<RepresentativeSchedule> repSchedule,
-            IDatesScheduleRepository<DatesSchedule> datesScheduleRepo)
+        private readonly IUnitOfWork _uw;
+        public MedicineDemandController(IUnitOfWork uw)
         {
-            _demandRepo = demandRepo;
-            _medicineStockRepo = medicineStockRepo;
-            _repSchedule = repSchedule;
-            _datesScheduleRepo = datesScheduleRepo;
+            _uw = uw;
         }
-        [HttpGet]
+
+        [HttpGet("ResetMedicineDemand")]
         public async Task<ActionResult> ResetMedicineDemand()
         {
-            IEnumerable<string> Names = await _medicineStockRepo.GetMedicineStocksName();
-            foreach(string name in Names)
+            try
             {
-                MedicineDemand md = new MedicineDemand();
-                md.Name = name;
-                md.DemandCount = 0;
-                await _demandRepo.AddMedicineDemand(md);
+                IEnumerable<string> Names = await _uw.MedicineStockRepository.GetMedicineStocksName();
+                foreach (string name in Names)
+                {
+                    MedicineDemand md = new MedicineDemand();
+                    md.Name = name;
+                    md.DemandCount = 0;
+                    await _uw.MedicineDemandRepository.AddMedicineDemand(md);
+                }
+                return Ok();
             }
-            return Ok();
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<ActionResult<MedicineDemand>> UpdateMedicneDemand(string name, int Demand)
         {
-            return await _demandRepo.UpdateMedicineDemand(name, Demand);
+            try
+            {
+                return await _uw.MedicineDemandRepository.UpdateMedicineDemand(name, Demand);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [HttpPut("UpdateAllDemands/{repSchedule_ID}")]
         public async Task<ActionResult> UpdateAllMedicineDemand(int repSchedule_ID, List<MedicineDemand> MDUpdateList)
         {
-            foreach(var md in MDUpdateList)
+            try
             {
-                var x = await _demandRepo.UpdateMedicineDemand(md.Name, md.DemandCount);
+                foreach (var md in MDUpdateList)
+                {
+                    var x = await _uw.MedicineDemandRepository.UpdateMedicineDemand(md.Name, md.DemandCount);
+                }
+                await _uw.RepresentativeScheduleRepository.UpdateStatus(repSchedule_ID);
+                var date = await _uw.RepresentativeScheduleRepository.GetScheduleById(repSchedule_ID);
+                await _uw.DatesScheduleRepository.UpdateCounter(date.Date);
+                return Ok();
             }
-            await _repSchedule.UpdateStatus(repSchedule_ID);
-            var date = await _repSchedule.GetScheduleById(repSchedule_ID);
-            await _datesScheduleRepo.UpdateCounter(date.Date);
-            return Ok();
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

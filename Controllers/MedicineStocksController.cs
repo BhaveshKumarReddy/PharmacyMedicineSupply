@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,34 +7,54 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Models.DTO.MedicineStock;
 using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+using PharmacyMedicineSupply.Repository;
+using PharmacyMedicineSupply.Repository.EntityClasses;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicineStocksController : ControllerBase
     {
-        private readonly PharmacySupplyContext _context;
-        private readonly IMapper _mapper;
-
-        public MedicineStocksController(PharmacySupplyContext context, IMapper mapper)
+        private readonly IUnitOfWork _uw;
+        
+        public MedicineStocksController(IUnitOfWork uw)
         {
-            _context = context;
-            _mapper = mapper;
+            _uw = uw;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicineStockDTO>>> MedicineStockInformation()
+        [HttpGet("{page}")]
+        public async Task<ActionResult<MedicineStockResponse>> MedicineStockInformation(int page)
         {
-            if (_context.MedicineStocks == null)
+            if (await _uw.MedicineStockRepository.GetMedicineStocks(page) == null)
             {
                 return NotFound();
             }
-            return await _context.MedicineStocks.Select(x => _mapper.Map<MedicineStockDTO>(x)).ToListAsync();
+            try
+            {
+                return await _uw.MedicineStockRepository.GetMedicineStocks(page);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

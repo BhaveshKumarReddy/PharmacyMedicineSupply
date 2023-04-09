@@ -23,15 +23,29 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
  
         }
 
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply()
+        public async Task<List<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupply()
         {
             return await _db.PharmacyMedicineSupplies.Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x)).ToListAsync();
         }
 
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedicineSupplyByDate(DateTime startDate)
+        public async Task<PharmacyMedSupplyResponse> GetPharmacyMedicineSupplyByDate(int page,DateTime startDate)
         {
-            var list = await _db.PharmacyMedicineSupplies.Where(x => x.DateTime == startDate).ToListAsync();
-            return list.Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x));
+            var pageResults = 6f;
+            var pageCount = Math.Ceiling(_db.PharmacyMedicineSupplies.Where(x => x.DateTime == startDate).Count() / pageResults);
+            var supplies = await _db.PharmacyMedicineSupplies
+                                  .Where(x => x.DateTime == startDate)
+                                  .Skip((page - 1) * (int)pageResults)
+                                  .Take((int)pageResults)
+                                  .Select(x => _mapper.Map<PharmacyMedSupplyDTO>(x)).ToListAsync();
+
+            var response = new PharmacyMedSupplyResponse
+            {
+                pharmacyMedSupplies = supplies,
+                CurrentPage = page,
+                Pages = (int)pageCount
+            };
+
+            return response;
         }
     }
 }
