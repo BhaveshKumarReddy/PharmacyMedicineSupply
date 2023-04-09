@@ -1,94 +1,123 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
+using PharmacyMedicineSupply.Models.DTO.MedicineStock;
 using PharmacyMedicineSupply.Models.DTO.PharmacyMedSupply;
+using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
+using System.Collections;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PharmacyMedSupplyController : ControllerBase
     {
-        private readonly IPharmacyRepository<Pharmacy> _pharmacyRepo;
-        private readonly IMedicineDemandRepository<MedicineDemand> _demandRepo;
-        private readonly IDatesScheduleRepository<DatesSchedule> _datesScheduleRepo;
-        private readonly IMedicineStockRepository<MedicineStock> _medicineStockRepo;
-        private readonly IPharmacyMedSupplyRepository<PharmacyMedSupply> _pharmacyMedSupplyRepo;
+        private readonly IUnitOfWork _uw;
 
-        public PharmacyMedSupplyController(IMedicineDemandRepository<MedicineDemand> demandRepo, 
-            IPharmacyRepository<Pharmacy> pharmacyRepo, 
-            IPharmacyMedSupplyRepository<PharmacyMedSupply> pharmacyMedSupplyRepo, 
-            IMedicineStockRepository<MedicineStock> medicineStockRepo,
-            IDatesScheduleRepository<DatesSchedule> datesScheduleRepo)
+        public PharmacyMedSupplyController(IUnitOfWork uw)
         {
-            _demandRepo = demandRepo;
-            _pharmacyRepo = pharmacyRepo;
-            _datesScheduleRepo = datesScheduleRepo;
-            _pharmacyMedSupplyRepo = pharmacyMedSupplyRepo;
-            _medicineStockRepo = medicineStockRepo;
+            _uw = uw;
         }
 
-        [HttpGet("Supply/{startDateString}")]
-        public async Task<IEnumerable<PharmacyMedSupplyDTO>> GetPharmacyMedSupply(string startDateString)
+        [HttpGet("Supply/{page}/{startDateString}")]
+        public async Task<ActionResult<PharmacyMedSupplyResponse>> GetPharmacyMedSupply(int page, string startDateString)
         {
-            DateTime startDate = Convert.ToDateTime(startDateString);
-            int supply, InStock, demand, PharmacyRecords,FinalStock,Supplied,i;
-            List<Pharmacy> ListOfPharmacies = await _pharmacyRepo.GetAllPharmacies();
-            var ListOfMedicineDemand = await _demandRepo.GetMedicineDemand();
-            foreach(var x in ListOfMedicineDemand)
+            try
             {
-                InStock= (await _medicineStockRepo.GetStockByMedicineName(x.Name)).NumberOfTabletsInStock;
-                demand = x.DemandCount;
-                PharmacyRecords = ListOfPharmacies.Count;                
-                if (demand >= InStock)
+                DateTime startDate = Convert.ToDateTime(startDateString);
+                int supply, InStock, demand, PharmacyRecords, FinalStock, RemSupply;
+                List<Pharmacy> ListOfPharmacies = await _uw.PharmacyRepository.GetAllPharmacies();
+                var ListOfMedicineDemand = await _uw.MedicineDemandRepository.GetMedicineDemand();
+                foreach (var x in ListOfMedicineDemand)
                 {
-                    FinalStock = InStock;
-                }
-                else
-                {
-                    FinalStock = demand;
-                }
-                if (FinalStock == 0)
-                {
-                    continue;
-                }
-                supply = FinalStock / PharmacyRecords;
-                MedicineStock ms = await _medicineStockRepo.GetStockByMedicineName(x.Name);
-                ms.NumberOfTabletsInStock -= FinalStock;
-                await _medicineStockRepo.UpdateMedicineStock(ms);
-                Supplied = 0;
-                i = 1;
-                foreach (Pharmacy p in ListOfPharmacies)
-                {
-                    PharmacyMedSupply pm = new PharmacyMedSupply();
-                    pm.PharmacyName = p.Name;
-                    pm.MedicineName = x.Name;
-                    pm.SupplyCount = supply;
-                    Supplied += supply;
-                    if (i == PharmacyRecords)
+                    InStock = (await _uw.MedicineStockRepository.GetStockByMedicineName(x.Name)).NumberOfTabletsInStock;
+                    demand = x.DemandCount;
+                    PharmacyRecords = ListOfPharmacies.Count;
+                    if (demand >= InStock)
                     {
-                        pm.SupplyCount += (FinalStock - Supplied);
+                        FinalStock = InStock;
                     }
-                    pm.DateTime= startDate;
-                    i ++;
-                    await _pharmacyMedSupplyRepo.AddPharmacyMedSupply(pm);
+                    else
+                    {
+                        FinalStock = demand;
+                    }
+                    if (FinalStock == 0)
+                    {
+                        continue;
+                    }
+                    supply = FinalStock / PharmacyRecords;
+                    MedicineStock ms = await _uw.MedicineStockRepository.GetStockByMedicineName(x.Name);
+                    ms.NumberOfTabletsInStock -= FinalStock;
+                    await _uw.MedicineStockRepository.UpdateMedicineStock(ms);
+                    RemSupply = FinalStock - (supply * PharmacyRecords);
+                    foreach (Pharmacy p in ListOfPharmacies)
+                    {
+                        PharmacyMedSupply pm = new PharmacyMedSupply();
+                        pm.PharmacyName = p.Name;
+                        pm.MedicineName = x.Name;
+                        pm.SupplyCount = supply;
+                        if (RemSupply > 0) 
+                        {
+                            pm.SupplyCount += 1;
+                            RemSupply -= 1;
+                        }
+                        pm.DateTime = startDate;
+                        await _uw.PharmacyMedSupplyRepository.AddPharmacyMedSupply(pm);
+                    }
                 }
-            } 
-            await _demandRepo.ResetMedicineDemand();
-            await _datesScheduleRepo.UpdateSupply(startDate);
-            return await _pharmacyMedSupplyRepo.GetPharmacyMedicineSupplyByDate(startDate);
-            //stored procedure to clear this table.
-
+                await _uw.MedicineDemandRepository.ResetMedicineDemand();
+                await _uw.DatesScheduleRepository.UpdateSupply(startDate);
+                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(page, startDate);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("AlreadySupplied/{startDateString}")]
-        public Task<IEnumerable<PharmacyMedSupplyDTO>> GetAlreadySuppliedPharma(string startDateString)
+        [HttpGet("AlreadySupplied/{page}/{startDateString}")]
+        public async Task<ActionResult<PharmacyMedSupplyResponse>> GetAlreadySuppliedPharma(int page, string startDateString)
         {
-            DateTime startDate = Convert.ToDateTime(startDateString);
-            return _pharmacyMedSupplyRepo.GetPharmacyMedicineSupplyByDate(startDate);
+            try
+            {
+                DateTime startDate = Convert.ToDateTime(startDateString);
+                return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(page, startDate);
+            }
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -29,7 +29,6 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         public async Task<List<MedicineDemand>> GetMedicineDemand()
         {
             return await _db.MedicineDemands.ToListAsync();
-            
         }
 
         public async Task<MedicineDemand> UpdateMedicineDemand(string MedicineName, int count)

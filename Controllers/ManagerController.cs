@@ -1,40 +1,89 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using PharmacyMedicineSupply.Repository;
 using PharmacyMedicineSupply.Repository.Classes;
+using PharmacyMedicineSupply.Repository.EntityInterfaces;
 using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ManagerController : ControllerBase
     {
-        private readonly PharmacySupplyContext _db;
-        public ManagerController(PharmacySupplyContext db)
+        private readonly IUnitOfWork _uw;
+        public ManagerController(IUnitOfWork uw)
         {
-            _db = db;
+            _uw = uw;
         }
 
+        [AllowAnonymous]
+
         [HttpPost("CheckingEmail")]
-        public IActionResult  CheckManagerEmail(string email)
+        public async Task<IActionResult> CheckManagerEmail(string email)
         {
-            Manager m1=_db.Managers.Where(x=>x.Email==email).FirstOrDefault();    
-            if (m1!=null)
+            try
             {
-                return Ok(false);
+                Manager m1 = await _uw.ManagerRepository.GetManagerbymail(email);
+                if (m1 != null)
+                {
+                    return Ok(false);
+                }
+                return Ok(true);
             }
-            return Ok(true);
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
+
+        [AllowAnonymous]
         [HttpPost("CheckingName")]
-        public IActionResult CheckManagerName(string name)
+        public async Task<IActionResult> CheckManagerName(string name)
         {
-            Manager m= _db.Managers.Where(x=>x.Name==name).FirstOrDefault();
-            if (m != null)
+            try
             {
-                return Ok(false);
+                Manager m = await _uw.ManagerRepository.GetManagerbyname(name);
+                if (m != null)
+                {
+                    return Ok(false);
+                }
+                return Ok(true);
             }
-            return Ok(true);
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (SqlException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
         

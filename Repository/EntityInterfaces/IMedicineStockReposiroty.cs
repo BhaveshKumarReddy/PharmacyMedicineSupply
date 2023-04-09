@@ -1,4 +1,7 @@
-﻿namespace PharmacyMedicineSupply.Repository.EntityInterfaces
+﻿using PharmacyMedicineSupply.Models.DTO.MedicineStock;
+using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
+
+namespace PharmacyMedicineSupply.Repository.EntityInterfaces
 {
     public interface IMedicineStockRepository<MedicineStock>
     {
@@ -6,6 +9,7 @@
 
         Task<MedicineStock> GetStockByMedicineName(string medicinename);
         Task UpdateMedicineStock(MedicineStock medicineStock);
-        public Task<IEnumerable<string>> GetMedicineStocksName();
+        Task<IEnumerable<string>> GetMedicineStocksName();
+        Task<MedicineStockResponse> GetMedicineStocks(int page);
     }
 }

@@ -24,5 +24,13 @@ namespace PharmacyMedicineSupply.Repository.Classes
             return await _db.Managers.SingleOrDefaultAsync(x => x.Email == manager.Email);
         }
 
+        public async Task<Manager> GetManagerbyname(string name)
+        {
+            return await _db.Managers.SingleOrDefaultAsync(x => x.Name == name);
+        }
+        public async Task<Manager> GetManagerbymail(string email)
+        {
+            return await _db.Managers.SingleOrDefaultAsync(x => x.Email == email);
+        }
     }
 }
