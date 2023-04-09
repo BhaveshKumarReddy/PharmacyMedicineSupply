@@ -17,6 +17,7 @@ using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicineStocksController : ControllerBase
