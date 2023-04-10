@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Models;
@@ -39,20 +40,20 @@ namespace PharmacyMedicineSupply.Controllers
                 _log4net.Info("Reset Successful");
                 return Ok();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
             catch (SqlException ex)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
             catch (NullReferenceException ex)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
@@ -69,20 +70,20 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return await _uw.MedicineDemandRepository.UpdateMedicineDemand(name, Demand);
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
@@ -108,20 +109,20 @@ namespace PharmacyMedicineSupply.Controllers
                 _log4net.Info("Updated Demand, Representative schedule status and Dates schedule counter");
                 return Ok();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
