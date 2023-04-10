@@ -23,6 +23,7 @@ namespace PharmacyMedicineSupply.Controllers
             _uw = uw;
         }
 
+        [AllowAnonymous]
         [HttpGet("ResetMedicineDemand")]
         public async Task<ActionResult> ResetMedicineDemand()
         {
