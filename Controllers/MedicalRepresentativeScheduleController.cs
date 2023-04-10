@@ -33,7 +33,8 @@ namespace PharmacyMedicineSupply.Controllers
             _log4net.Info("Selecting Representative schedule by date is invoked");
             DateTime startDate = Convert.ToDateTime(startDateString);
             try
-            {                
+            {
+                _log4net.Info("Successfully retrieved Representative schedule");
                 return await _uw.RepresentativeScheduleRepository.GetScheduleByDate(startDate);
             }
             catch (DbUpdateException ex)

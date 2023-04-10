@@ -23,7 +23,7 @@ namespace PharmacyMedicineSupply.Controllers
     public class MedicineStocksController : ControllerBase
     {
         private readonly IUnitOfWork _uw;
-        
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(MedicineStocksController));
         public MedicineStocksController(IUnitOfWork uw)
         {
             _uw = uw;
@@ -32,6 +32,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("{page}")]
         public async Task<ActionResult<MedicineStockResponse>> MedicineStockInformation(int page)
         {
+            _log4net.Info("Medicine Stock page "+page+" Invoked");
             if (await _uw.MedicineStockRepository.GetMedicineStocks(page) == null)
             {
                 return NotFound();
@@ -42,18 +43,22 @@ namespace PharmacyMedicineSupply.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
