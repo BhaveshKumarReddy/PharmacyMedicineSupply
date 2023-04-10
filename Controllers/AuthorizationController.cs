@@ -56,7 +56,7 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 var res = await _uw.ManagerRepository.CreateAsync(newManager);
                 var tokenString = GenerateJSONWebToken(res);
-                IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+                IActionResult response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Name = _manager.Name , Role = "manager" });
                 _log4net.Info("Registered Successfully");
                 return response;
             }
@@ -90,7 +90,7 @@ namespace PharmacyMedicineSupply.Controllers
                 if (manager != null)
                 {
                     var tokenString = GenerateJSONWebToken(manager);
-                    response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Role = "manager" });
+                    response = Ok(new LoginResponse { Token = tokenString, Email = _manager.Email, Name = manager.Name, Role = "manager" });
                     _log4net.Info("Login Successful");
                 }
                 return response;
