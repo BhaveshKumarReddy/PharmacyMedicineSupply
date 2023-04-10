@@ -20,7 +20,7 @@ namespace PharmacyMedicineSupply.Controllers
     public class PharmacyMedSupplyController : ControllerBase
     {
         private readonly IUnitOfWork _uw;
-
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(PharmacyMedSupplyController));
         public PharmacyMedSupplyController(IUnitOfWork uw)
         {
             _uw = uw;
@@ -29,6 +29,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("Supply/{page}/{startDateString}")]
         public async Task<ActionResult<PharmacyMedSupplyResponse>> GetPharmacyMedSupply(int page, string startDateString)
         {
+            _log4net.Info("Creating pharmacy medicine supply is Invoked");
             try
             {
                 DateTime startDate = Convert.ToDateTime(startDateString);
@@ -74,22 +75,27 @@ namespace PharmacyMedicineSupply.Controllers
                 }
                 await _uw.MedicineDemandRepository.ResetMedicineDemand();
                 await _uw.DatesScheduleRepository.UpdateSupply(startDate);
+                _log4net.Info("Successfully created pharmacy medicine supply");
                 return await _uw.PharmacyMedSupplyRepository.GetPharmacyMedicineSupplyByDate(page, startDate);
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -97,6 +103,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("AlreadySupplied/{page}/{startDateString}")]
         public async Task<ActionResult<PharmacyMedSupplyResponse>> GetAlreadySuppliedPharma(int page, string startDateString)
         {
+            _log4net.Info("Getting pharmacy supply table is Invoked");
             try
             {
                 DateTime startDate = Convert.ToDateTime(startDateString);
@@ -104,18 +111,22 @@ namespace PharmacyMedicineSupply.Controllers
             }
             catch (DbUpdateException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (SqlException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (NullReferenceException ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }

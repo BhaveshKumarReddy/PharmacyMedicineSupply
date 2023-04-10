@@ -78,6 +78,7 @@ namespace PharmacyMedicineSupply.Controllers
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
