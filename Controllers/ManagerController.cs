@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ManagerController : ControllerBase
@@ -19,6 +21,8 @@ namespace PharmacyMedicineSupply.Controllers
         {
             _uw = uw;
         }
+
+        [AllowAnonymous]
 
         [HttpPost("CheckingEmail")]
         public async Task<IActionResult> CheckManagerEmail(string email)
@@ -55,6 +59,8 @@ namespace PharmacyMedicineSupply.Controllers
             }
 
         }
+
+        [AllowAnonymous]
         [HttpPost("CheckingName")]
         public async Task<IActionResult> CheckManagerName(string name)
         {
