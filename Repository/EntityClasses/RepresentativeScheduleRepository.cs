@@ -18,7 +18,7 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
         public async Task<List<RepresentativeSchedule>> GetScheduleByDate(DateTime startDate)
         {
             DatesSchedule DateSchedule = await _datesScheduleRepo.GetDatesSchedule(startDate);
-            var res = await _db.RepresentativeSchedules.Where(x => x.Date >= startDate && x.Date <= DateSchedule.EndDate).ToListAsync();
+            var res = await _db.RepresentativeSchedules.FromSqlRaw($"exec GetScheduleByDate @startDate='{startDate.ToString("yyyy-MM-dd")}', @EndDate='{DateSchedule.EndDate.ToString("yyyy-MM-dd")}'").ToListAsync();
             return res;
         }
 
