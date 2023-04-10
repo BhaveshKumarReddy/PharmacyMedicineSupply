@@ -60,17 +60,17 @@ namespace PharmacyMedicineSupply.Controllers
                 _log4net.Info("Registered Successfully");
                 return response;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
@@ -95,17 +95,17 @@ namespace PharmacyMedicineSupply.Controllers
                 }
                 return response;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
