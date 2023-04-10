@@ -13,31 +13,31 @@
 
           new Doctor()
           {
-              Name = "Avinash",
+              Name = "Venkatesh",
               ContactNumber = "8532280017",
               TreatingAilment = "Cardiology"
           },
           new Doctor()
           {
-              Name = "Adarsh",
+              Name = "Akash",
               ContactNumber = "9232289112",
               TreatingAilment = "Orthopedic"
           },
           new Doctor()
           {
-              Name = "Pavith",
+              Name = "Prakash",
               ContactNumber = "7569172719",
               TreatingAilment = "General"
           },
           new Doctor()
           {
-              Name = "Parthe",
+              Name = "Suresh",
               ContactNumber = "7169100701",
               TreatingAilment = "Orthopedic"
           },
           new Doctor()
           {
-              Name = "Prabhakar",
+              Name = "Ramanujan",
               ContactNumber = "8187002119",
               TreatingAilment = "ENT"
           }
