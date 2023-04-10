@@ -29,20 +29,20 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return await _uw.DatesScheduleRepository.GetAllDatesScheduled();
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
@@ -61,20 +61,20 @@ namespace PharmacyMedicineSupply.Controllers
                 _log4net.Info("Representative schedule retrieved successfully");
                 return available;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
             catch (SqlException ex)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
             catch (NullReferenceException ex)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {

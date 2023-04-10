@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using PharmacyMedicineSupply.Controllers;
+using PharmacyMedicineSupply.Models;
 using PharmacyMedicineSupply.Models.DTO.MedicineStock;
 using PharmacyMedicineSupply.Models.DTO.MedicineSupply;
 using PharmacyMedicineSupply.Repository.EntityInterfaces;
@@ -22,7 +23,7 @@ namespace PharmacyMedicineSupply.Repository.EntityClasses
 
         public async Task<string> GetMedicineForSchedule(string ailment)
         {
-            var medicines = await _db.MedicineStocks.Where(x => x.TargetAilment == ailment).ToListAsync();
+            var medicines = await _db.MedicineStocks.FromSqlRaw($"exec GetMedicineStock @ailment = {ailment}").ToListAsync(); 
             string all_medicines = "";
             foreach(var medicine in medicines)
             {
