@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicalRepresentativeScheduleController : ControllerBase
@@ -31,23 +33,24 @@ namespace PharmacyMedicineSupply.Controllers
             _log4net.Info("Selecting Representative schedule by date is invoked");
             DateTime startDate = Convert.ToDateTime(startDateString);
             try
-            {                
+            {
+                _log4net.Info("Successfully retrieved Representative schedule");
                 return await _uw.RepresentativeScheduleRepository.GetScheduleByDate(startDate);
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                _log4net.Error(ex.Message);
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
@@ -128,17 +131,17 @@ namespace PharmacyMedicineSupply.Controllers
 
                 return representativeSchedules;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                return BadRequest(ex.Message);
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {

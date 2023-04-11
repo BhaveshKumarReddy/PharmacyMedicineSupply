@@ -17,12 +17,13 @@ using PharmacySupplyProject.Models;
 
 namespace PharmacyMedicineSupply.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MedicineStocksController : ControllerBase
     {
         private readonly IUnitOfWork _uw;
-        
+        static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(MedicineStocksController));
         public MedicineStocksController(IUnitOfWork uw)
         {
             _uw = uw;
@@ -31,6 +32,7 @@ namespace PharmacyMedicineSupply.Controllers
         [HttpGet("{page}")]
         public async Task<ActionResult<MedicineStockResponse>> MedicineStockInformation(int page)
         {
+            _log4net.Info("Medicine Stock page "+page+" Invoked");
             if (await _uw.MedicineStockRepository.GetMedicineStocks(page) == null)
             {
                 return NotFound();
@@ -39,20 +41,24 @@ namespace PharmacyMedicineSupply.Controllers
             {
                 return await _uw.MedicineStockRepository.GetMedicineStocks(page);
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot update Database");
+                return BadRequest("Cannot update Database");
             }
-            catch (SqlException ex)
+            catch (SqlException)
             {
-                return BadRequest(ex.Message);
+                _log4net.Error("Cannot access Database");
+                return BadRequest("Cannot access Database");
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                return BadRequest(ex.Message);
+                _log4net.Error("Object not found");
+                return BadRequest("Object not found");
             }
             catch (Exception ex)
             {
+                _log4net.Error(ex.Message);
                 return BadRequest(ex.Message);
             }
         }
